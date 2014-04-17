@@ -1,0 +1,17 @@
+{
+    "source": "github"
+  , "owner": "jillix"
+  , "name": "mono-maps"
+  , "dependencies": [
+        "/client/main.js"
+      , "github/jillix/bind/v0.2.1"
+      , "github/jillix/events/v0.1.9"
+    ]
+  , "operations": [
+        { "file": "server/operations.js", "function": "create" }
+      , { "file": "server/operations.js", "function": "read"   }
+      , { "file": "server/operations.js", "function": "update" }
+      , { "file": "server/operations.js", "function": "delete" }
+      , { "file": "server/operations.js", "function": "embed"  }
+    ]
+}
