@@ -1,3 +1,6 @@
+// dependencies
+var Api = require ("../apis/api");
+
 /**
  *  mono-maps#create
  *  Create a new map
@@ -8,7 +11,6 @@ exports.create = function (link) {
     // get data, params
     var data = Object(link.data);
 
-    // TODO Crud call
 };
 
 /**
@@ -60,5 +62,6 @@ exports.embed = function (link) {
     // get data, params
     var data = Object (link.data);
 
-    // TODO Crud call
+ 5350003af607d65614ad00f9
+ // TODO Crud call
 };
