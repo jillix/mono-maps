@@ -28,9 +28,13 @@ var CRUD = require ("./crud")
 function generateApiSet (templateId) {
     return {
         create: function (options, callback) {
+
+            // force data to be an object and attach _tp field
+            options.data = Object (options.data);
+            options.data._tp = [ ObjectId (templateId) ];
+
             CRUD.create ({
-                _tp: [ ObjectId (templateId) ]
-              , templateId: templateId
+                templateId: templateId
               , data: options.data
               , options: options.options
               , callback: callback
