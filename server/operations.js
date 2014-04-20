@@ -39,7 +39,7 @@ function validateFormData (operation, data, link) {
             }
 
             // validate data
-            return validators._validateData (data.data, "Data");
+            return validators._validateObject (data.data, "Data");
         }
 
         /*
@@ -48,7 +48,7 @@ function validateFormData (operation, data, link) {
       , read: function () {
 
             // validate query
-            return validators._validateData (data.query, "Query");
+            return validators._validateObject (data.query, "Query");
         }
 
         /*
