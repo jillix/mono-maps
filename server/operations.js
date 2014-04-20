@@ -2,6 +2,132 @@
 var Api = require ("../apis/api");
 
 /**
+ *  This function validates the post data and
+ *  returns true if data is valid
+ *
+ */
+function validateFormData (operation, data, link) {
+
+    // operation validators
+    var validators = {
+
+        // template names
+        _validTypes: ["map", "marker", "infowin", "icon"]
+
+        /*
+         *  Create operation validator
+         * */
+      , create: function () {
+
+            // type
+            if (!data.type || data.type.constructor !== String) {
+                return link.send (400, "type field must be a non empty string.");
+            }
+
+            // validate type
+            if (validators._validTypes.indexOf(data.type) === -1) {
+                return link.send (400, "Invalid type.");
+            }
+
+            // validate data
+            if (!data.data || data.data.constructor !== Object) {
+                return link.send (400, "Data must be an object.");
+            }
+
+            return true;
+        }
+
+        /*
+         *  Read operation validator
+         * */
+      , read: function () {
+
+            // query
+            if (!data.query || data.query.constructor !== Object) {
+                return link.send ("query must be an object");
+            }
+
+            // validate type
+            if (!data.query || data.query.constructor !== Object) {
+                return link.send (400, "Query must be an object.");
+            }
+
+            return true;
+        }
+
+        /*
+         *  Update operation validator
+         * */
+      , update: function () {
+
+            // type
+            if (!data.type || data.type.constructor !== String) {
+                return link.send (400, "type field must be a non empty string.");
+            }
+
+            // validate type
+            if (validators._validTypes.indexOf(data.type) === -1) {
+                return link.send (400, "Invalid type.");
+            }
+
+            // validate query
+            if (!data.query || data.query.constructor !== Object) {
+                return link.send (400, "Query must be an object.");
+            }
+
+            // validate data
+            if (!data.data || data.data.constructor !== Object) {
+                return link.send (400, "Data must be an object.");
+            }
+
+            return true;
+        }
+
+        /*
+         *  Delete operation validator
+         * */
+      , delete: function () {
+
+            // type
+            if (!data.type || data.type.constructor !== String) {
+                return link.send (400, "type field must be a non empty string.");
+            }
+
+            // validate type
+            if (validators._validTypes.indexOf(data.type) === -1) {
+                return link.send (400, "Invalid type.");
+            }
+
+            // validate query
+            if (!data.query || data.query.constructor !== Object) {
+                return link.send (400, "Query must be an object.");
+            }
+
+            return true;
+        }
+    }
+
+    // call validators
+    return validators[operation]();
+}
+
+/**
+ *  This function is called when the response
+ *  from CRUD comes
+ *
+ * */
+function handleResponse (link, err, data) {
+
+    // handle error
+    if (err) {
+        return link.send (400, err);
+    }
+
+    // send success
+    link.send (200, data);
+}
+
+/**
  *  mono-maps#create
  *  Create a new map
  *
@@ -11,6 +137,17 @@ exports.create = function (link) {
     // get data, params
     var data = Object(link.data);
 
+    // validate data
+    if (validateFormData ("create", data, link) !== true) {
+        return;
+    }
+
+    // create map, marker, infowindow or icon
+    Api[data.type].create ({
+        data: data.data
+    }, function (err, data) {
+        handleResponse (link, err, data);
+    });
 };
 
 /**
@@ -20,23 +157,44 @@ exports.create = function (link) {
  */
 exports.read = function (link) {
 
-    // get data, params
+    // get data
     var data = Object(link.data);
 
-    // TODO Crud call
+    // validate data
+    if (validateFormData ("create", data, link) !== true) {
+        return;
+    }
+
+    // read map
+    Api.map.read ({
+        query: data.query
+    }, function (err, data) {
+        handleResponse (link, err, data);
+    });
 };
 
 /**
  *  mono-maps#update
- *  Update a map
+ *  Update a map/marker/infowin/icon
  *
  */
 exports.update = function (link) {
 
-    // get data, params
+    // get data
     var data = Object (link.data);
 
-    // TODO Crud call
+    // validate data
+    if (validateFormData ("create", data, link) !== true) {
+        return;
+    }
+
+    // create map, marker, infowindow or icon
+    Api[data.type].create ({
+        query: data.query
+      , data: data.data
+    }, function (err, data) {
+        handleResponse (link, err, data);
+    });
 };
 
 /**
@@ -46,10 +204,20 @@ exports.update = function (link) {
  */
 exports.delete = function (link) {
 
-    // get data, params
+    // get data
     var data = Object (link.data);
 
-    // TODO Crud call
+    // validate data
+    if (validateFormData ("create", data, link) !== true) {
+        return;
+    }
+
+    // create map, marker, infowindow or icon
+    Api[data.type].create ({
+        query: data.query
+    }, function (err, data) {
+        handleResponse (link, err, data);
+    });
 };
 
 /**
@@ -62,6 +230,5 @@ exports.embed = function (link) {
     // get data, params
     var data = Object (link.data);
 
- 5350003af607d65614ad00f9
- // TODO Crud call
+    // TODO Crud call
 };
