@@ -1,3 +1,4 @@
+M.wrap('github/jillix/mono-maps/dev/client/main.js', function (require, module, exports) {
 // Bind and Events dependencies
 var Bind = require("github/jillix/bind")
   , Events = require("github/jillix/events")
@@ -30,3 +31,5 @@ module.exports = function(config) {
     // emit ready
     self.emit("ready", self.config);
 };
+
+return module; });

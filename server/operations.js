@@ -13,6 +13,15 @@ function validateFormData (operation, data, link) {
 
         // template names
         _validTypes: ["map", "marker", "infowin", "icon"]
+      , _validateObject: function (obj, name) {
+
+            // validate data
+            if (!obj || obj.constructor !== Object) {
+                return link.send (400, name + " must be an object.");
+            }
+
+            return true;
+        }
 
         /*
          *  Create operation validator
@@ -30,11 +39,7 @@ function validateFormData (operation, data, link) {
             }
 
             // validate data
-            if (!data.data || data.data.constructor !== Object) {
-                return link.send (400, "Data must be an object.");
-            }
-
-            return true;
+            return validators._validateData (data.data, "Data");
         }
 
         /*
@@ -42,17 +47,8 @@ function validateFormData (operation, data, link) {
          * */
       , read: function () {
 
-            // query
-            if (!data.query || data.query.constructor !== Object) {
-                return link.send ("query must be an object");
-            }
-
-            // validate type
-            if (!data.query || data.query.constructor !== Object) {
-                return link.send (400, "Query must be an object.");
-            }
-
-            return true;
+            // validate query
+            return validators._validateData (data.query, "Query");
         }
 
         /*
@@ -70,14 +66,9 @@ function validateFormData (operation, data, link) {
                 return link.send (400, "Invalid type.");
             }
 
-            // validate query
-            if (!data.query || data.query.constructor !== Object) {
-                return link.send (400, "Query must be an object.");
-            }
-
-            // validate data
-            if (!data.data || data.data.constructor !== Object) {
-                return link.send (400, "Data must be an object.");
+            // validate query and data
+            if (validators._validateObject (data.query, "Query") === true) {
+                return validators._validateObject (data.data, "Data");
             }
 
             return true;
