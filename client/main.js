@@ -38,5 +38,5 @@ module.exports = function(config) {
     }
 
     // emit ready
-    self.emit("ready", self.config);
+    self.emit("ready", self);
 };
