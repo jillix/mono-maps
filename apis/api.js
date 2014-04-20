@@ -43,6 +43,7 @@ function generateApiSet (templateId) {
       , read: function (options, callback) {
             CRUD.read ({
                 templateId: templateId
+              , noJoins: options.noJoins
               , query: options.query
               , options: options.options
               , callback: callback

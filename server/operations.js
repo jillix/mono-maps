@@ -185,6 +185,7 @@ exports.read = function (link) {
     // read map
     Api.map.read ({
         query: data.query
+      , noJoins: true
     }, function (err, data) {
         handleResponse (link, err, data);
     });

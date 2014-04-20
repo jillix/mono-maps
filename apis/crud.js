@@ -11,6 +11,7 @@ function runCrudRequest (options) {
     // create the crud object
     var crudObject = {
         templateId: options.templateId
+      , noJoins: options.noJoins
       , role: options.role
       , options: options.options
       , query: options.query
@@ -49,6 +50,7 @@ module.exports = {
   , read: function (options, callback) {
         runCrudRequest ({
             role:       ObjectId('53500045f607d65614ad00fb')
+          , noJoins: options.noJoins
           , templateId: options.templateId
           , method:     "read"
           , query:      options.query
