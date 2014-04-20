@@ -14,7 +14,7 @@ var CRUD = require ("./crud")
           , id: "534ffe16f607d65614ad00e6"
         }
       , {
-            name: "icons"
+            name: "icon"
           , id: "534fffd7f607d65614ad00f7"
         }
     ]
