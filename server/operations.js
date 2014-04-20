@@ -178,7 +178,7 @@ exports.read = function (link) {
     var data = Object(link.data);
 
     // validate data
-    if (validateFormData ("create", data, link) !== true) {
+    if (validateFormData ("read", data, link) !== true) {
         return;
     }
 
@@ -201,7 +201,7 @@ exports.update = function (link) {
     var data = Object (link.data);
 
     // validate data
-    if (validateFormData ("create", data, link) !== true) {
+    if (validateFormData ("update", data, link) !== true) {
         return;
     }
 
@@ -225,7 +225,7 @@ exports.delete = function (link) {
     var data = Object (link.data);
 
     // validate data
-    if (validateFormData ("create", data, link) !== true) {
+    if (validateFormData ("delete", data, link) !== true) {
         return;
     }
 
