@@ -37,7 +37,7 @@ function generateApiSet (templateId) {
             });
         }
       , read: function (options, callback) {
-            CRUD.create ({
+            CRUD.read ({
                 templateId: templateId
               , query: options.query
               , options: options.options
@@ -45,7 +45,7 @@ function generateApiSet (templateId) {
             });
         }
       , update: function (options, callback) {
-            CRUD.create ({
+            CRUD.update ({
                 templateId: templateId
               , query: options.query
               , data: data
@@ -54,7 +54,7 @@ function generateApiSet (templateId) {
             });
         }
       , delete: function (options, callback) {
-            CRUD.create ({
+            CRUD.delete ({
                 templateId: templateId
               , query: options.query
               , options: options.options
