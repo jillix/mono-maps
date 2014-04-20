@@ -98,8 +98,34 @@ function validateFormData (operation, data, link) {
         }
     }
 
+    // is the user logged in?
+    if (!link.session || !link.session.userId || !link.session.userId.toString()) {
+        return link.session (403, "You are not logged in.");
+    }
+
     // call validators
-    return validators[operation]();
+    if (validators[operation]() === true) {
+
+        // add owner types
+        switch (operation) {
+            case "create":
+                data.data.owner = link.session.userId.toString();
+                return true;
+            case "read":
+                data.query.owner = link.session.userId.toString();
+                return true;
+            case "update":
+                data.data.owner = link.session.userId.toString();
+                data.query.owner = link.session.userId.toString();
+                return true;
+            case "delete":
+                data.query.owner = link.session.userId.toString();
+                return true;
+            default:
+                link.send (200, "Invalid operation");
+                return false;
+        }
+    }
 }
 
 /**
