@@ -1,5 +1,6 @@
 // dependencies
 var CRUD = require ("./crud")
+  , ObjectId = require ("mongodb").ObjectID
   , templates = [
         {
             name: "map"
@@ -28,7 +29,8 @@ function generateApiSet (templateId) {
     return {
         create: function (options, callback) {
             CRUD.create ({
-                templateId: templateId
+                _tp: [ ObjectId (templateId) ]
+              , templateId: templateId
               , data: options.data
               , options: options.options
               , callback: callback
