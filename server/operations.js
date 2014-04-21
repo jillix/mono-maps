@@ -183,7 +183,7 @@ exports.read = function (link) {
     }
 
     // read map
-    Api.map.read ({
+    Api[data.type].read ({
         query: data.query
       , noJoins: true
     }, function (err, data) {
