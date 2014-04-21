@@ -25,6 +25,7 @@ module.exports = function(config) {
 
     // set config in self
     self.config = config;
+    self._maps = {};
 
     // crud operations
     var operations = ["create", "read", "update", "delete"];
@@ -53,20 +54,56 @@ module.exports = function(config) {
         callback = callback || function () {};
 
         // call server operation
-        self.link ("embed", { data: options}, function (err, data) {
+        self.link ("embed", { data: options}, function (err, mapData) {
 
             // handle error
             if (err) {
                 return callback (err);
             }
 
-            if (!$(self.config.options.map).length) {
-                console.error ("No map element found.");
-            }
+            // cache map in _maps
+            self._maps[mapData._id] = mapData;
+
+            // get google maps script
+            $.getScript("https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&callback=__initializeMap");
         });
     }
+
+    /**
+     *  This is a global function that will be called after loading the
+     *  Google library.
+     *
+     * */
+    window.__initializeMap = function (mapData) {
+
+        // no map data
+        if (!mapData) {
+            for (var mapId in self._maps) {
+                __initializeMap (self._maps[mapId]);
+            }
+            return;
+        }
+
+        // get map element
+        var mapEl = $(self.config.options.map)[0];
+        if (!mapEl) {
+            console.error ("No map element found.");
+        }
+
+        // map options
+        var mapOptions = {
+            center: new google.maps.LatLng (
+                mapData.options.center.lat
+              , mapData.options.center.lng
+            )
+          , zoom: mapData.options.zoom
+          , mapTypeId: google.maps.MapTypeId[mapData.options.type]
+        };
+
+        // save google maps instance in _gmap
+        self._gmap = new google.maps.Map(mapEl, mapOptions)
+    };
 
     // emit ready
     self.emit("ready", self);
 };
-
