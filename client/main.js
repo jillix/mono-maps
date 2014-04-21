@@ -60,7 +60,7 @@ module.exports = function(config) {
                 return callback (err);
             }
 
-            if (!$(self.options.map).length) {
+            if (!$(self.config.options.map).length) {
                 console.error ("No map element found.");
             }
         });
@@ -69,3 +69,4 @@ module.exports = function(config) {
     // emit ready
     self.emit("ready", self);
 };
+
