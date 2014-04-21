@@ -207,7 +207,7 @@ exports.update = function (link) {
     }
 
     // create map, marker, infowindow or icon
-    Api[data.type].create ({
+    Api[data.type].update ({
         query: data.query
       , data: data.data
     }, function (err, data) {
@@ -231,7 +231,7 @@ exports.delete = function (link) {
     }
 
     // create map, marker, infowindow or icon
-    Api[data.type].create ({
+    Api[data.type].delete ({
         query: data.query
     }, function (err, data) {
         handleResponse (link, err, data);
