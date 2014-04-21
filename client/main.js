@@ -37,6 +37,19 @@ module.exports = function(config) {
         })(operations[i]);
     }
 
+    /**
+     *  mono-maps#embed
+     *  Gets the map to embed from database
+     *
+     *  Arguments
+     *    options: an object containing:
+     *      - mapId: the map id
+     *    callback: the callback function
+     * */
+    self.embed = function (options, callback) {
+        self.link ("embed", { data: options}, callback);
+    }
+
     // emit ready
     self.emit("ready", self);
 };
