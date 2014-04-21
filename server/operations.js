@@ -146,7 +146,7 @@ function handleResponse (link, err, data) {
 
 /**
  *  mono-maps#create
- *  Create a new map
+ *  Create a new map/marker/infowin/icon
  *
  */
 exports.create = function (link) {
@@ -169,7 +169,7 @@ exports.create = function (link) {
 
 /**
  *  mono-maps#read
- *  Read maps
+ *  Read maps/markers/infowins/icons
  *
  */
 exports.read = function (link) {
@@ -183,7 +183,7 @@ exports.read = function (link) {
     }
 
     // read map
-    Api.map.read ({
+    Api[data.type].read ({
         query: data.query
       , noJoins: true
     }, function (err, data) {
