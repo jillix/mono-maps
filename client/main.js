@@ -102,6 +102,66 @@ module.exports = function(config) {
 
         // save google maps instance in _gmap
         self._gmap = new google.maps.Map(mapEl, mapOptions)
+
+        // default value for markers
+        var markers = mapData.markers = mapData.markers || []
+          , allMarkers = []
+          ;
+
+        // each marker
+        for (var i = 0; i < markers.length; ++i) {
+
+            (function (cMarker) {
+
+                // icon exists
+                if (cMarker.icon) {
+
+                    cMarker.icon = new google.maps.MarkerImage(
+                        cMarker.icon.path
+                      , new google.maps.Size (
+                            cMarker.icon.size.w
+                          , cMarker.icon.size.h
+                        )
+                      , new google.maps.Point (
+                            cMarker.icon.origin.x
+                          , cMarker.icon.origin.y
+                        )
+                      , new google.maps.Point (
+                            cMarker.icon.anchor.x
+                          , cMarker.icon.anchor.y
+                        )
+                    );
+                }
+
+                // create google marker
+                var marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(cMarker.position.lat, cMarker.position.lng)
+                  , map: self._gmap
+                  , title: (cMarker.infowin || {}).title || ""
+                  , icon: cMarker.icon || undefined
+                  , visible: cMarker.visible
+                });
+
+                // infowin exists
+                if (cMarker.infowin) {
+                    cMarker.infowin = new google.maps.InfoWindow({
+                        content: cMarker.infowin.content
+                    });
+                }
+
+                // push the new marker
+                allMarkers.push (marker);
+
+                // add click event for info window
+                google.maps.event.addListener(marker, "click", function() {
+                    if (!cMarker.infowin) return;
+                    cMarker.infowin.open(self._gmap, marker);
+                });
+            })(markers[i]);
+        }
+
+        // marker clusterer
+        self._gmarkerClusterer = new MarkerClusterer(self._gmap);
     };
 
     // emit ready
