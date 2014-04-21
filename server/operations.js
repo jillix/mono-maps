@@ -1,5 +1,7 @@
 // dependencies
-var Api = require ("../apis/api");
+var Api = require ("../apis/api")
+  , ObjectId = require ("mongodb").ObjectID
+  ;
 
 /**
  *  This function validates the post data and
@@ -96,6 +98,15 @@ function validateFormData (operation, data, link) {
 
             return true;
         }
+      , embed: function () {
+
+            // validate map id
+            if (!data.mapId || data.mapId.constructor !== String) {
+                return link.send (400, "Missing or invalid map id.");
+            }
+
+            return true;
+        }
     }
 
     // is the user logged in?
@@ -120,6 +131,8 @@ function validateFormData (operation, data, link) {
                 return true;
             case "delete":
                 data.query.owner = link.session.userId.toString();
+                return true;
+            case "embed":
                 return true;
             default:
                 link.send (200, "Invalid operation");
@@ -248,5 +261,97 @@ exports.embed = function (link) {
     // get data, params
     var data = Object (link.data);
 
-    // TODO Crud call
+    // validate data
+    if (validateFormData ("embed", data, link) !== true) {
+        return;
+    }
+
+    try {
+        data.mapId = ObjectId (data.mapId)
+    } catch (e) {
+        return handleResponse (link, "Invalid map id.");
+    }
+
+    // read map
+    Api.map.read ({
+        query: {
+            _id: data.mapId
+        }
+    }, function (err, data) {
+
+        // handle crud errors
+        if (err) {
+            console.error (err);
+            err = "Internal server error.";
+        // no maps
+        } else if (!data || !data.length) {
+            err = "No map found with this id.";
+        }
+
+        if (err) {
+            return handleResponse (link, err, map);
+        }
+
+        // get map
+        var map = data[0]
+          , markers = map.markers
+          , howManyRequests = 0
+          , complete = 0
+          ;
+
+        function handleComplete () {
+            if (++complete === howManyRequests) {
+                handleResponse (link, err, map);
+            }
+        }
+
+        // each marker
+        for (var i = 0; i < markers.length; ++i) {
+            (function (cMarker) {
+
+                // icon
+                if (cMarker.icon) {
+                    ++howManyRequests;
+                    Api.icon.read ({
+                        query: {
+                            _id: cMarker.icon
+                        }
+                    }, function (err, data) {
+
+                        if (err) {
+                            console.error (err);
+                            delete cMarker.icon;
+                        } else if (!data || !data.length) {
+                            delete cMarker.icon;
+                        }
+
+                        cMarker.icon = data[0];
+
+                        handleComplete();
+                    });
+                }
+
+                // infowin
+                if (cMarker.infowin) {
+                    ++howManyRequests;
+                    Api.infowin.read ({
+                        query: {
+                            _id: cMarker.infowin
+                        }
+                    }, function (err, data) {
+
+                        if (err) {
+                            console.error (err);
+                            delete cMarker.infowin;
+                        } else if (!data || !data.length) {
+                            delete cMarker.infowin;
+                        }
+
+                        cMarker.infowin = data[0];
+                        handleComplete();
+                    });
+                }
+            })(markers[i]);
+        }
+    });
 };
