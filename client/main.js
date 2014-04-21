@@ -16,6 +16,7 @@ module.exports = function(config) {
 
     // binds
     config.binds = config.binds || [];
+    config.options = Object (config.options);
 
     // run the binds
     for (var i = 0; i < config.binds.length; ++i) {
@@ -47,7 +48,22 @@ module.exports = function(config) {
      *    callback: the callback function
      * */
     self.embed = function (options, callback) {
-        self.link ("embed", { data: options}, callback);
+
+        // default value for callback
+        callback = callback || function () {};
+
+        // call server operation
+        self.link ("embed", { data: options}, function (err, data) {
+
+            // handle error
+            if (err) {
+                return callback (err);
+            }
+
+            if (!$(self.options.map).length) {
+                console.error ("No map element found.");
+            }
+        });
     }
 
     // emit ready
