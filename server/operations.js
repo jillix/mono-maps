@@ -292,6 +292,7 @@ exports.embed = function (link) {
             return handleResponse (link, err, map);
         }
 
+        // TODO This should be fixed in CRUD.
         // get map
         var map = data[0]
           , markers = map.markers
