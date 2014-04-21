@@ -137,7 +137,7 @@ module.exports = function(config) {
                 var marker = new google.maps.Marker({
                     position: new google.maps.LatLng(cMarker.position.lat, cMarker.position.lng)
                   , map: self._gmap
-                  , title: (cMarker.infowin || {}).title || ""
+                  , title: cMarker..title || ""
                   , icon: cMarker.icon || undefined
                   , visible: cMarker.visible
                 });
