@@ -279,6 +279,7 @@ exports.embed = function (link) {
         }
     }, function (err, data) {
 
+
         // handle crud errors
         if (err) {
             console.error (err);
@@ -353,6 +354,11 @@ exports.embed = function (link) {
                     });
                 }
             })(markers[i]);
+        }
+
+        // no other requests
+        if (!howManyRequests) {
+            handleResponse (link, err, map);
         }
     });
 };
