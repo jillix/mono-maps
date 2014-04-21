@@ -296,7 +296,7 @@ exports.embed = function (link) {
         // TODO This should be fixed in CRUD.
         // get map
         var map = data[0]
-          , markers = map.markers
+          , markers = map.markers || []
           , howManyRequests = 0
           , complete = 0
           ;
