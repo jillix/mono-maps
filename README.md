@@ -2,6 +2,27 @@ Mono Maps
 =========
 Mono module for [jxMaps application](https://github.com/jillix/Maps).
 
+# Configuration
+
+```js
+"mono_maps": {
+    "module": "github/jillix/mono-maps/MODULE_VERSION"
+  , "roles": MONO_ROLES
+  , "config": {
+        "options": {
+            "map": "JQUERY_SELECTOR"
+        }
+    }
+  , "operations": {
+        "create": { "roles": MONO_ROLES }
+      , "read":   { "roles": MONO_ROLES }
+      , "update": { "roles": MONO_ROLES }
+      , "delete": { "roles": MONO_ROLES }
+      , "embed":  { "roles": MONO_ROLES }
+    }
+}
+```
+
 # Client side
 
 ## `self.create (options, callback)`
