@@ -110,8 +110,10 @@ function validateFormData (operation, data, link) {
     }
 
     // is the user logged in?
-    if (!link.session || !link.session.userId || !link.session.userId.toString()) {
-        return link.session (403, "You are not logged in.");
+    if (operation !== "embed") {
+        if (!link.session || !link.session.userId || !link.session.userId.toString()) {
+            return link.session (403, "You are not logged in.");
+        }
     }
 
     // call validators
