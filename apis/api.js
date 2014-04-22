@@ -53,7 +53,7 @@ function generateApiSet (templateId) {
             CRUD.update ({
                 templateId: templateId
               , query: options.query
-              , data: data
+              , data: options.data
               , options: options.options
               , callback: callback
             });
