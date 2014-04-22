@@ -128,7 +128,17 @@ function validateFormData (operation, data, link) {
                 data.query.owner = link.session.userId.toString();
                 return true;
             case "update":
-                data.data.owner = link.session.userId.toString();
+
+                // no $set operator
+                if (!data.data.$set) {
+                    data.data.$set = data.data;
+                }
+
+                // _id provided, but is a string
+                if (data.query._id && data.query._id.constructor === String) {
+                    data.query._id = ObjectId (data.query._id);
+                }
+
                 data.query.owner = link.session.userId.toString();
                 return true;
             case "delete":
