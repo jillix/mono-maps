@@ -5,8 +5,8 @@
   , "dependencies": [
         "/client/main.js"
       , "http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/src/markerclusterer.js"
-      , "github/jillix/bind/v0.2.1"
-      , "github/jillix/events/v0.1.9"
+      , "github/jillix/bind/v0.2.2"
+      , "github/jillix/events/v0.1.10"
     ]
   , "operations": [
         { "file": "server/operations.js", "function": "create" }
