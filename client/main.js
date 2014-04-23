@@ -50,6 +50,10 @@ module.exports = function(config) {
      * */
     self.embed = function (options, callback) {
 
+        // update ui
+        $(self.config.options.map).hide();
+        $(self.config.options.waiter).show();
+
         // default value for callback
         callback = callback || function () {};
 
@@ -58,6 +62,11 @@ module.exports = function(config) {
 
             // handle error
             if (err) {
+
+                // update UI
+                $(self.config.options.waiter).fadeOut();
+                $(self.config.options.error).fadeIn().text(err);
+
                 return callback (err);
             }
 
@@ -162,6 +171,10 @@ module.exports = function(config) {
 
         // marker clusterer
         self._gmarkerClusterer = new MarkerClusterer(self._gmap);
+
+        // update ui
+        $(self.config.options.map).fadeIn();
+        $(self.config.options.waiter).fadeOut();
     };
 
     // emit ready
