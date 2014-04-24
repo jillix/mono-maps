@@ -123,6 +123,13 @@ function validateFormData (operation, data, link) {
         switch (operation) {
             case "create":
                 data.data.owner = link.session.userId.toString();
+                // set default object id values
+                switch (data.type) {
+                    case "marker":
+                        data.data.infowin = data.data.infowin || ObjectId ("000000000000000000000000");
+                        data.data.icon    = data.data.icon    || ObjectId ("000000000000000000000000");
+                        break;
+                }
                 return true;
             case "read":
                 data.query.owner = link.session.userId.toString();
@@ -137,6 +144,14 @@ function validateFormData (operation, data, link) {
                 // _id provided, but is a string
                 if (data.query._id && data.query._id.constructor === String) {
                     data.query._id = ObjectId (data.query._id);
+                }
+
+                // set default object id values
+                switch (data.type) {
+                    case "marker":
+                        data.data.$set.infowin = data.data.$set.infowin || ObjectId ("000000000000000000000000");
+                        data.data.$set.icon    = data.data.$set.icon    || ObjectId ("000000000000000000000000");
+                        break;
                 }
 
                 data.query.owner = link.session.userId.toString();
