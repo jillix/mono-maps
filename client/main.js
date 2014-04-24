@@ -186,7 +186,10 @@ module.exports = function(config) {
     };
 
     // we are on the embed page
-    if (location.pathname + location.search + location.hash === self.config.options.embedPage) {
+    if (
+        location.pathname + location.search + location.hash === self.config.options.embedPage
+        && self.config.options.automaticallyEmbed !== false
+    ) {
 
         // get the map id
         var mapId = Utils.queryString ("mapId");
