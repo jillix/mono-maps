@@ -68,7 +68,9 @@ Not yet implemented
 # Changelog
 
 ## `dev`
- - No stable version yet
+
+## `v0.1.0`
+ - Initial release
 
 # License
 See LICENSE file.
