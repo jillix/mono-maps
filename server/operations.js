@@ -3,6 +3,9 @@ var Api = require ("../apis/api")
   , ObjectId = require ("mongodb").ObjectID
   ;
 
+// constants
+const DUMMY_OBJECT_ID = ObjectId ("000000000000000000000000");
+
 /**
  *  This function validates the post data and
  *  returns true if data is valid
@@ -126,8 +129,8 @@ function validateFormData (operation, data, link) {
                 // set default object id values
                 switch (data.type) {
                     case "marker":
-                        data.data.infowin = data.data.infowin || ObjectId ("000000000000000000000000");
-                        data.data.icon    = data.data.icon    || ObjectId ("000000000000000000000000");
+                        data.data.infowin = data.data.infowin || DUMMY_OBJECT_ID;
+                        data.data.icon    = data.data.icon    || DUMMY_OBJECT_ID;
                         break;
                 }
                 return true;
@@ -149,8 +152,8 @@ function validateFormData (operation, data, link) {
                 // set default object id values
                 switch (data.type) {
                     case "marker":
-                        data.data.$set.infowin = data.data.$set.infowin || ObjectId ("000000000000000000000000");
-                        data.data.$set.icon    = data.data.$set.icon    || ObjectId ("000000000000000000000000");
+                        data.data.$set.infowin = data.data.$set.infowin || DUMMY_OBJECT_ID;
+                        data.data.$set.icon    = data.data.$set.icon    || DUMMY_OBJECT_ID;
                         break;
                 }
 
@@ -343,6 +346,23 @@ exports.embed = function (link) {
 
             // attach markers
             map.markers = markers;
+
+            // delete icons that have dummy ids
+            for (var i = 0; i < markers.length; ++i) {
+
+                // current marker
+                var cMarker = markers[i];
+
+                // verify if icon is dummy
+                if (cMarker.icon && cMarker.icon._id.toString() === DUMMY_OBJECT_ID.toString()) {
+                    delete cMarker.icon;
+                }
+
+                // verify if infowin is dummy
+                if (cMarker.infowin && cMarker.infowin._id.toString() === DUMMY_OBJECT_ID.toString()) {
+                    delete cMarker.infowin;
+                }
+            }
 
             // send success response
             handleResponse (link, null, map);
