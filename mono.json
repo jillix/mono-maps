@@ -5,6 +5,7 @@
   , "dependencies": [
         "/client/main.js"
       , "http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/src/markerclusterer.js"
+      , "github/jillix/utils/v0.1.1"
       , "github/jillix/bind/v0.2.2"
       , "github/jillix/events/v0.1.10"
     ]

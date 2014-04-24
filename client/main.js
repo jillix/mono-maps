@@ -1,6 +1,7 @@
-// Bind and Events dependencies
+// dependencies
 var Bind = require("github/jillix/bind")
   , Events = require("github/jillix/events")
+  , Utils = require("github/jillix/utils")
   ;
 
 /**
