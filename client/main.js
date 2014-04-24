@@ -104,7 +104,7 @@ module.exports = function(config) {
         // get map element
         var mapEl = self._$.map[0];
         if (!mapEl) {
-            console.error ("No map element found.");
+            return console.error ("No map element found.");
         }
 
         // map options
