@@ -291,7 +291,6 @@ exports.embed = function (link) {
         }
     }, function (err, data) {
 
-
         // handle crud errors
         if (err) {
             console.error (err);
@@ -301,11 +300,9 @@ exports.embed = function (link) {
             err = "No map found with this id.";
         }
 
-        if (err) {
-            return handleResponse (link, err, map);
-        }
+        // handle error
+        if (err) { return handleResponse (link, err, map); }
 
-        // TODO This should be fixed in CRUD.
         // get map
         var map = data[0]
           , markers = map.markers || []
@@ -313,64 +310,27 @@ exports.embed = function (link) {
           , complete = 0
           ;
 
-        function handleComplete () {
-            if (++complete === howManyRequests) {
-                handleResponse (link, err, map);
-            }
-        }
-
-        // each marker
+        // convert string to object ids
         for (var i = 0; i < markers.length; ++i) {
-            (function (cMarker) {
-
-                // icon
-                if (cMarker.icon) {
-                    ++howManyRequests;
-                    Api.icon.read ({
-                        query: {
-                            _id: cMarker.icon
-                        }
-                    }, function (err, data) {
-
-                        if (err) {
-                            console.error (err);
-                            delete cMarker.icon;
-                        } else if (!data || !data.length) {
-                            delete cMarker.icon;
-                        }
-
-                        cMarker.icon = data[0];
-
-                        handleComplete();
-                    });
-                }
-
-                // infowin
-                if (cMarker.infowin) {
-                    ++howManyRequests;
-                    Api.infowin.read ({
-                        query: {
-                            _id: cMarker.infowin
-                        }
-                    }, function (err, data) {
-
-                        if (err) {
-                            console.error (err);
-                            delete cMarker.infowin;
-                        } else if (!data || !data.length) {
-                            delete cMarker.infowin;
-                        }
-
-                        cMarker.infowin = data[0];
-                        handleComplete();
-                    });
-                }
-            })(markers[i]);
+            markers[i] = ObjectId (markers[i]);
         }
 
-        // no other requests
-        if (!howManyRequests) {
-            handleResponse (link, err, map);
-        }
+
+        // read markers
+        Api.marker.read ({
+            query: {
+                _id: { $in: markers }
+            }
+        }, function (err, markers) {
+
+            // handle error
+            if (err) { return handleResponse (link, err, map); }
+
+            // attach markers
+            map.markers = markers;
+
+            // send success response
+            handleResponse (link, null, map);
+        });
     });
 };
