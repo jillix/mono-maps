@@ -32,8 +32,8 @@ module.exports = function(config) {
     // ui
     self._$ = {
         map: $(self.config.options.ui.map)
-      , waiter: $(self.config.options.ui.map)
-      , error: $(self.config.options.ui.map)
+      , waiter: $(self.config.options.ui.waiter)
+      , error: $(self.config.options.ui.error)
     }
 
     // crud operations
