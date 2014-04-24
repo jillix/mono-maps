@@ -17,6 +17,7 @@ module.exports = function(config) {
     // binds
     config.binds = config.binds || [];
     config.options = Object (config.options);
+    config.options.ui = Object (config.options.ui);
 
     // run the binds
     for (var i = 0; i < config.binds.length; ++i) {
@@ -26,6 +27,13 @@ module.exports = function(config) {
     // set config in self
     self.config = config;
     self._maps = {};
+
+    // ui
+    self._$ = {
+        map: $(self.config.options.ui.map)
+      , waiter: $(self.config.options.ui.map)
+      , error: $(self.config.options.ui.map)
+    }
 
     // crud operations
     var operations = ["create", "read", "update", "delete"];
@@ -51,8 +59,8 @@ module.exports = function(config) {
     self.embed = function (options, callback) {
 
         // update ui
-        $(self.config.options.map).hide();
-        $(self.config.options.waiter).show();
+        self._$.map.hide();
+        self._$.waiter.show();
 
         // default value for callback
         callback = callback || function () {};
@@ -64,8 +72,8 @@ module.exports = function(config) {
             if (err) {
 
                 // update UI
-                $(self.config.options.waiter).fadeOut();
-                $(self.config.options.error).fadeIn().text(err);
+                self._$.waiter.fadeOut();
+                self._$.error.fadeIn().text(err);
 
                 return callback (err);
             }
@@ -94,7 +102,7 @@ module.exports = function(config) {
         }
 
         // get map element
-        var mapEl = $(self.config.options.map)[0];
+        var mapEl = self._$.map[0];
         if (!mapEl) {
             console.error ("No map element found.");
         }
@@ -173,9 +181,26 @@ module.exports = function(config) {
         self._gmarkerClusterer = new MarkerClusterer(self._gmap);
 
         // update ui
-        $(self.config.options.map).fadeIn();
-        $(self.config.options.waiter).fadeOut();
+        self._$.map.fadeIn();
+        self._$.waiter.fadeOut();
     };
+
+    // we are on the embed page
+    if (location.pathname + location.search + location.hash === self.config.options.embedPage) {
+
+        // get the map id
+        var mapId = Utils.queryString ("mapId");
+
+        // no map id
+        if (!mapId) {
+            self._$.map.hide();
+            self._$.waiter.hide();
+            self._$.error.text("Missing mapId.");
+        }
+
+        // call embed method
+        self.embed ({mapId: mapId});
+    }
 
     // emit ready
     self.emit("ready", self);
