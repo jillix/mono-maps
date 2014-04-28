@@ -225,7 +225,7 @@ module.exports = function(config) {
                       , "lng": parseInt (Utils.queryString ("centerLng")) || lng
                     }
                   , "zoom": parseInt (Utils.queryString ("zoom"))
-                  , "type": "HYBRID"
+                  , "type": Utils.queryString ("zoom") || "ROADMAP"
                 }
               , "markers": [
                     {
@@ -235,6 +235,25 @@ module.exports = function(config) {
                             "lat": lat
                           , "lng": lng
                         }
+                        "icon": {
+                            "path": Utils.queryString ("iconPath"),
+                            "label": Utils.queryString ("iconLabel"),
+                            "size": {
+                                "w": parseInt (Utils.queryString ("iconSizeW")),
+                                "h": parseInt (Utils.queryString ("iconSizeH"))
+                            },
+                            "origin": {
+                                "x": parseInt (Utils.queryString ("iconOriginX")),
+                                "y": parseInt (Utils.queryString ("iconOriginY"))
+                            },
+                            "anchor": {
+                                "x": parseInt (Utils.queryString ("iconAnchorX")),
+                                "y": parseInt (Utils.queryString ("iconAnchorY"))
+                            }
+                        },
+                        "infowin": {
+                            "content": parseInt (Utils.queryString ("infoWindowContent"))
+                        },
                       , "visible": true
                     }
                 ]
