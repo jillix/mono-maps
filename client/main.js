@@ -79,12 +79,21 @@ module.exports = function(config) {
                 return callback (err);
             }
 
-            // cache map in _maps
-            self._maps[mapData._id] = mapData;
-
-            // get google maps script
-            $.getScript("https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&callback=__initializeMap");
+            handleMapData (mapData);
         });
+    }
+
+    /**
+     *  This function attaches the map data to the module instance
+     *
+     */
+    function handleMapData (mapData) {
+
+        // cache map in _maps
+        self._maps[mapData._id] = mapData;
+
+        // get google maps script
+        $.getScript("https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&callback=__initializeMap");
     }
 
     /**
@@ -186,6 +195,9 @@ module.exports = function(config) {
         self._$.waiter.fadeOut();
     };
 
+    // emit ready
+    self.emit("ready", self);
+
     // we are on the embed page
     if (
         location.pathname + location.hash === self.config.options.embedPage
@@ -193,19 +205,47 @@ module.exports = function(config) {
     ) {
 
         // get the map id
-        var mapId = Utils.queryString ("mapId");
+        var mapId = Utils.queryString ("mapId")
+          , lat = Utils.queryString ("lat")
+          , lng = Utils.queryString ("lng")
+          ;
 
-        // no map id
-        if (!mapId) {
-            self._$.map.hide();
-            self._$.waiter.hide();
-            self._$.error.text("Missing mapId.");
+        // map id was provided
+        if (mapId) {
+            return self.embed ({mapId: mapId});
         }
 
-        // call embed method
-        self.embed ({mapId: mapId});
-    }
+        // querystring api
+        if (lat && lng) {
+            var mapData = {
+                "name": Utils.queryString ("mapName") || "No name"
+              , "options": {
+                    "center": {
+                        "lat": parseInt (Utils.queryString ("centerLat")) || lat
+                      , "lng": parseInt (Utils.queryString ("centerLng")) || lng
+                    }
+                  , "zoom": parseInt (Utils.queryString ("zoom"))
+                  , "type": "HYBRID"
+                }
+              , "markers": [
+                    {
+                        "label": Utils.queryString ("markerLabel")
+                      , "title": Utils.queryString ("markerTitle")
+                      , "position": {
+                            "lat": lat
+                          , "lng": lng
+                        }
+                      , "visible": true
+                    }
+                ]
+            };
 
-    // emit ready
-    self.emit("ready", self);
+            return handleMapData (mapData);
+        }
+
+        // invalid request
+        self._$.map.hide();
+        self._$.waiter.hide();
+        self._$.error.text("Please provide a map id or use the queryString ");
+    }
 };
