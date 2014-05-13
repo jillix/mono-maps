@@ -1,3 +1,4 @@
+M.wrap('github/jillix/mono-maps/dev/client/main.js', function (require, module, exports) {
 // dependencies
 var Bind = require("github/jillix/bind")
   , Events = require("github/jillix/events")
@@ -102,6 +103,23 @@ module.exports = function(config) {
      *
      * */
     window.__initializeMap = function (mapData) {
+
+        if (self._maps._addressMap) {
+            geocoder = new google.maps.Geocoder();
+            geocoder.geocode( { 'address': "New York" }, function(results, status) {
+                var loc = results[0].geometry.location;
+                if (!loc) { return console.error ("No location found"); }
+                var lng = loc.A;
+                var lat = loc.k;
+
+                Url.addSearch("lng", lng);
+                Url.addSearch("lat", lat);
+                Url.addSearch("address", "");
+                debugger;
+                location.reload();
+            });
+            return;
+        }
 
         // no map data
         if (!mapData) {
@@ -208,6 +226,7 @@ module.exports = function(config) {
         var mapId = Utils.queryString ("mapId")
           , lat = Utils.queryString ("lat")
           , lng = Utils.queryString ("lng")
+          , address = Utils.queryString ("address")
           ;
 
         // map id was provided
@@ -215,26 +234,30 @@ module.exports = function(config) {
             return self.embed ({mapId: mapId});
         }
 
+        if (address) {
+            return handleMapData ({address: address, _id: "_addressMap" });
+        }
+
         // querystring api
         if (lat && lng) {
             var mapData = {
-                "name": Utils.queryString ("mapName") || "No name"
-              , "options": {
+                "name": Utils.queryString ("mapName") || "No name",
+                "options": {
                     "center": {
-                        "lat": parseInt (Utils.queryString ("centerLat")) || lat
-                      , "lng": parseInt (Utils.queryString ("centerLng")) || lng
-                    }
-                  , "zoom": parseInt (Utils.queryString ("zoom"))
-                  , "type": Utils.queryString ("zoom") || "ROADMAP"
-                }
-              , "markers": [
+                        "lat": parseInt (Utils.queryString ("centerLat")) || lat,
+                        "lng": parseInt (Utils.queryString ("centerLng")) || lng
+                    },
+                    "zoom": parseInt (Utils.queryString ("zoom")),
+                    "type": Utils.queryString ("zoom") || "ROADMAP"
+                },
+                "markers": [
                     {
-                        "label": Utils.queryString ("markerLabel")
-                      , "title": Utils.queryString ("markerTitle")
-                      , "position": {
-                            "lat": lat
-                          , "lng": lng
-                        }
+                        "label": Utils.queryString ("markerLabel"),
+                        "title": Utils.queryString ("markerTitle"),
+                        "position": {
+                            "lat": lat,
+                            "lng": lng
+                        },
                         "icon": {
                             "path": Utils.queryString ("iconPath"),
                             "label": Utils.queryString ("iconLabel"),
@@ -254,7 +277,7 @@ module.exports = function(config) {
                         "infowin": {
                             "content": parseInt (Utils.queryString ("infoWindowContent"))
                         },
-                      , "visible": true
+                        "visible": true
                     }
                 ]
             };
@@ -268,3 +291,5 @@ module.exports = function(config) {
         self._$.error.text("Please provide a map id or use the queryString ");
     }
 };
+
+return module; });
