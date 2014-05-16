@@ -253,10 +253,10 @@ module.exports = function(config) {
                 "name": Utils.queryString ("mapName") || "No name",
                 "options": {
                     "center": {
-                        "lat": parseInt (Utils.queryString ("centerLat")) || lat,
-                        "lng": parseInt (Utils.queryString ("centerLng")) || lng
+                        "lat": Number(Utils.queryString ("centerLat")) || lat,
+                        "lng": Number(Utils.queryString ("centerLng")) || lng
                     },
-                    "zoom": parseInt (Utils.queryString ("zoom")),
+                    "zoom": Number(Utils.queryString ("zoom")),
                     "type": Utils.queryString ("zoom") || "ROADMAP"
                 },
                 "markers": [
@@ -271,20 +271,20 @@ module.exports = function(config) {
                             "path": Utils.queryString ("iconPath"),
                             "label": Utils.queryString ("iconLabel"),
                             "size": {
-                                "w": parseInt (Utils.queryString ("iconSizeW")),
-                                "h": parseInt (Utils.queryString ("iconSizeH"))
+                                "w": Number(Utils.queryString ("iconSizeW")),
+                                "h": Number(Utils.queryString ("iconSizeH"))
                             },
                             "origin": {
-                                "x": parseInt (Utils.queryString ("iconOriginX")),
-                                "y": parseInt (Utils.queryString ("iconOriginY"))
+                                "x": Number(Utils.queryString ("iconOriginX")),
+                                "y": Number(Utils.queryString ("iconOriginY"))
                             },
                             "anchor": {
-                                "x": parseInt (Utils.queryString ("iconAnchorX")),
-                                "y": parseInt (Utils.queryString ("iconAnchorY"))
+                                "x": Number(Utils.queryString ("iconAnchorX")),
+                                "y": Number(Utils.queryString ("iconAnchorY"))
                             }
                         },
                         "infowin": {
-                            "content": parseInt (Utils.queryString ("infoWindowContent"))
+                            "content": Number(Utils.queryString ("infoWindowContent"))
                         },
                         "visible": true
                     }
