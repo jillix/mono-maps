@@ -123,8 +123,8 @@ module.exports = function(config) {
                 var lat = loc.k;
 
                 // set lng and lat values and delete address param
-                Url.updateSearchParam("lng", lng);
-                Url.updateSearchParam("lat", lat);
+                Url.updateSearchParam("options.center.lng", lng);
+                Url.updateSearchParam("options.center.lat", lat);
                 Url.updateSearchParam("address");
                 location.reload();
             });
@@ -166,6 +166,10 @@ module.exports = function(config) {
         for (var i = 0; i < markers.length; ++i) {
 
             (function (cMarker) {
+
+                if (!cMarker.position) {
+                    return;
+                }
 
                 // icon exists
                 if (cMarker.icon) {
@@ -233,8 +237,8 @@ module.exports = function(config) {
 
         // get the map id
         var mapId = Utils.queryString ("mapId")
-          , lat = Utils.queryString ("lat")
-          , lng = Utils.queryString ("lng")
+          , lat = Utils.queryString ("options.center.lat")
+          , lng = Utils.queryString ("options.center.lng")
           , address = Utils.queryString ("address")
           ;
 
@@ -249,47 +253,51 @@ module.exports = function(config) {
 
         // querystring api
         if (lat && lng) {
-            var mapData = {
-                "name": Utils.queryString ("mapName") || "No name",
-                "options": {
-                    "center": {
-                        "lat": Number(Utils.queryString ("centerLat")) || lat,
-                        "lng": Number(Utils.queryString ("centerLng")) || lng
-                    },
-                    "zoom": Number(Utils.queryString ("zoom")),
-                    "type": Utils.queryString ("zoom") || "ROADMAP"
+            var fields = {
+                "name": {
+                    default: "No name"
                 },
-                "markers": [
-                    {
-                        "label": Utils.queryString ("markerLabel"),
-                        "title": Utils.queryString ("markerTitle"),
-                        "position": {
-                            "lat": lat,
-                            "lng": lng
-                        },
-                        "icon": {
-                            "path": Utils.queryString ("iconPath"),
-                            "label": Utils.queryString ("iconLabel"),
-                            "size": {
-                                "w": Number(Utils.queryString ("iconSizeW")),
-                                "h": Number(Utils.queryString ("iconSizeH"))
-                            },
-                            "origin": {
-                                "x": Number(Utils.queryString ("iconOriginX")),
-                                "y": Number(Utils.queryString ("iconOriginY"))
-                            },
-                            "anchor": {
-                                "x": Number(Utils.queryString ("iconAnchorX")),
-                                "y": Number(Utils.queryString ("iconAnchorY"))
-                            }
-                        },
-                        "infowin": {
-                            "content": Number(Utils.queryString ("infoWindowContent"))
-                        },
-                        "visible": true
-                    }
-                ]
+                "options.center.lat": { validator: function (val) { return Number (val); } },
+                "options.center.lng": { validator: function (val) { return Number (val); } },
+                "options.zoom": { validator: function (val) { return Number (val); } },
+                "options.type": {
+                    default: "ROADMAP"
+                },
+                "markers.0.label": {},
+                "markers.0.title": {},
+                "markers.0.position.lat": { validator: function (val) { return Number (val); } },
+                "markers.0.position.lng": { validator: function (val) { return Number (val); } },
+                "markers.0.icon.path": {},
+                "markers.0.icon.label": {},
+                "markers.0.icon.size.w": { validator: function (val) { return Number (val); } },
+                "markers.0.icon.size.h": { validator: function (val) { return Number (val); } },
+                "markers.0.icon.origin.x": { validator: function (val) { return Number (val); } },
+                "markers.0.icon.origin.y": { validator: function (val) { return Number (val); } },
+                "markers.0.icon.anchor.x": { validator: function (val) { return Number (val); } },
+                "markers.0.icon.anchor.y": { validator: function (val) { return Number (val); } },
+                "markers.0.infowin.content": {},
+                "markers.0.visible": { default: true }
             };
+
+            // set map data
+            var mapData = {};
+            var searchQueryObj = Url.parseSearchQuery();
+            for (var field in fields) {
+                if (!fields.hasOwnProperty(field)) continue;
+                var cFieldVal = fields[field];
+                var paramValue = searchQueryObj[field];
+                var valueToSet = paramValue || cFieldVal.default;
+                if (cFieldVal.validator) {
+                    valueToSet = cFieldVal.validator(valueToSet);
+                }
+                mapData[field] = valueToSet;
+                if (mapData[field] === undefined) {
+                    delete mapData[field];
+                }
+            }
+
+            mapData = Utils.unflattenObject(mapData);
+            mapData.markers.length = 1;
 
             return handleMapData (mapData);
         }
@@ -297,7 +305,7 @@ module.exports = function(config) {
         // invalid request
         self._$.map.hide();
         self._$.waiter.hide();
-        self._$.error.text("Please provide a map id or use the queryString ");
+        self._$.error.text("Please provide a map id or use the query string API.");
     }
 };
 
