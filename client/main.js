@@ -1,4 +1,5 @@
 M.wrap('github/jillix/mono-maps/dev/client/main.js', function (require, module, exports) {
+
 // dependencies
 var Bind = require("github/jillix/bind")
   , Events = require("github/jillix/events")
@@ -50,14 +51,14 @@ module.exports = function(config) {
     }
 
     /**
-     *  mono-maps#embed
-     *  Gets the map to embed from database
+     * embed
+     * Gets the map to embed from database
      *
-     *  Arguments
-     *    options: an object containing:
-     *      - mapId: the map id
-     *    callback: the callback function
-     * */
+     * @param options: object containing
+     *  - mapId: the map id
+     * @param callback
+     * @return
+     */
     self.embed = function (options, callback) {
 
         // update ui
@@ -85,12 +86,15 @@ module.exports = function(config) {
     }
 
     /**
-     *  This function attaches the map data to the module instance
+     * handleMapData
+     * This function attaches the map data to the module instance
      *
+     * @param mapData
+     * @return
      */
     function handleMapData (mapData) {
 
-        // cache map in _maps
+        // cache map data
         self._maps[mapData._id] = mapData;
 
         // get google maps script
@@ -98,27 +102,32 @@ module.exports = function(config) {
     }
 
     /**
-     *  This is a global function that will be called after loading the
-     *  Google library.
+     * __initializeMap
+     * This is a global function that will be called after
+     * loading the Google library.
      *
-     * */
+     * @param mapData
+     * @return
+     */
     window.__initializeMap = function (mapData) {
 
+        // handle ?address parameter
         if (self._maps._addressMap) {
             geocoder = new google.maps.Geocoder();
-            geocoder.geocode( { 'address': "New York" }, function(results, status) {
+            return geocoder.geocode({
+                address: Utils.queryString ("address")
+            }, function(results, status) {
                 var loc = results[0].geometry.location;
                 if (!loc) { return console.error ("No location found"); }
                 var lng = loc.A;
                 var lat = loc.k;
 
-                Url.addSearch("lng", lng);
-                Url.addSearch("lat", lat);
-                Url.addSearch("address", "");
-                debugger;
+                // set lng and lat values and delete address param
+                Url.updateSearchParam("lng", lng);
+                Url.updateSearchParam("lat", lat);
+                Url.updateSearchParam("address");
                 location.reload();
             });
-            return;
         }
 
         // no map data
