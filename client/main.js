@@ -126,6 +126,10 @@ module.exports = function(config) {
                 Url.updateSearchParam("options.center.lng", lng);
                 Url.updateSearchParam("options.center.lat", lat);
                 Url.updateSearchParam("address");
+                if (Url.queryString("displayMarker")) {
+                    Url.updateSearchParam("markers.0.position.lng", lng);
+                    Url.updateSearchParam("markers.0.position.lat", lat);
+                }
                 location.reload();
             });
         }
