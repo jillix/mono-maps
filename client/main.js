@@ -255,28 +255,35 @@ module.exports = function(config) {
 
         // querystring api
         if (lat && lng) {
+
+            var validators = {
+                number: function (val) {
+                    return isNaN(val) ? undefined : Number(val);
+                }
+            };
+
             var fields = {
                 "name": {
                     default: "No name"
                 },
-                "options.center.lat": { validator: function (val) { return Number (val); } },
-                "options.center.lng": { validator: function (val) { return Number (val); } },
-                "options.zoom": { validator: function (val) { return Number (val); } },
+                "options.center.lat": { validator: validators.number },
+                "options.center.lng": { validator: validators.number },
+                "options.zoom": { validator: validator.number },
                 "options.type": {
                     default: "ROADMAP"
                 },
                 "markers.0.label": {},
                 "markers.0.title": {},
-                "markers.0.position.lat": { validator: function (val) { return Number (val); } },
-                "markers.0.position.lng": { validator: function (val) { return Number (val); } },
+                "markers.0.position.lat": { validator: validator.number },
+                "markers.0.position.lng": { validator: validator.number },
                 "markers.0.icon.path": {},
                 "markers.0.icon.label": {},
-                "markers.0.icon.size.w": { validator: function (val) { return Number (val); } },
-                "markers.0.icon.size.h": { validator: function (val) { return Number (val); } },
-                "markers.0.icon.origin.x": { validator: function (val) { return Number (val); } },
-                "markers.0.icon.origin.y": { validator: function (val) { return Number (val); } },
-                "markers.0.icon.anchor.x": { validator: function (val) { return Number (val); } },
-                "markers.0.icon.anchor.y": { validator: function (val) { return Number (val); } },
+                "markers.0.icon.size.w": { validator: validator.number },
+                "markers.0.icon.size.h": { validator: validator.number },
+                "markers.0.icon.origin.x": { validator: validator.number },
+                "markers.0.icon.origin.y": { validator: validator.number },
+                "markers.0.icon.anchor.x": { validator: validator.number },
+                "markers.0.icon.anchor.y": { validator: validator.number },
                 "markers.0.infowin.content": {},
                 "markers.0.visible": { default: true }
             };
