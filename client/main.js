@@ -278,12 +278,12 @@ module.exports = function(config) {
                 "markers.0.position.lng": { validator: validators.number },
                 "markers.0.icon.path": {},
                 "markers.0.icon.label": {},
-                "markers.0.icon.size.w": { validator: validators.number },
-                "markers.0.icon.size.h": { validator: validators.number },
-                "markers.0.icon.origin.x": { validator: validators.number },
-                "markers.0.icon.origin.y": { validator: validators.number },
-                "markers.0.icon.anchor.x": { validator: validators.number },
-                "markers.0.icon.anchor.y": { validator: validators.number },
+                "markers.0.icon.size.w": { default: 100, validator: validators.number },
+                "markers.0.icon.size.h": { default: 100, validator: validators.number },
+                "markers.0.icon.origin.x": { default: 0, validator: validators.number },
+                "markers.0.icon.origin.y": { default: 0, validator: validators.number },
+                "markers.0.icon.anchor.x": { default: 0, validator: validators.number },
+                "markers.0.icon.anchor.y": { default: 0, validator: validators.number },
                 "markers.0.infowin.content": {},
                 "markers.0.visible": { default: true }
             };
