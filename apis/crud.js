@@ -16,6 +16,7 @@ function runCrudRequest (options) {
       , options: options.options
       , query: options.query
       , data: options.data
+      , noCursor: true
     };
 
     // send the crud object and the callback to
@@ -50,11 +51,11 @@ module.exports = {
   , read: function (options, callback) {
         runCrudRequest ({
             role:       ObjectId('53500045f607d65614ad00fb')
-          , noJoins: options.noJoins
+          , noJoins:    options.noJoins
           , templateId: options.templateId
           , method:     "read"
           , query:      options.query
-          , options: options.options
+          , options:    options.options
           , callback:   options.callback
         });
     }
