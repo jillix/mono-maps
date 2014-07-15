@@ -270,7 +270,10 @@ module.exports = function(config) {
                 },
                 "options.center.lat": { validator: validators.number },
                 "options.center.lng": { validator: validators.number },
-                "options.zoom": { validator: validators.number },
+                "options.zoom": {
+                    validator: validators.number,
+                    default: 15
+                },
                 "options.type": {
                     default: "ROADMAP"
                 },
