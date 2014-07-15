@@ -118,8 +118,9 @@ module.exports = function(config) {
             }, function(results, status) {
                 var loc = results[0].geometry.location;
                 if (!loc) { return console.error ("No location found"); }
-                var lng = loc.A;
-                var lat = loc.k;
+                var strLoc = loc.toString().replace(/\(|\)/g, "").split(", ");
+                var lat = strLoc[0];
+                var lng = strLoc[1];
 
                 // set lng and lat values and delete address param
                 Url.updateSearchParam("options.center.lng", lng);
