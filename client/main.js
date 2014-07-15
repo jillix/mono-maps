@@ -1,3 +1,4 @@
+M.wrap('github/jillix/mono-maps/dev/client/main.js', function (require, module, exports) {
 // dependencies
 var Bind = require("github/jillix/bind")
   , Events = require("github/jillix/events")
@@ -113,7 +114,7 @@ module.exports = function(config) {
         if (self._maps._addressMap) {
             geocoder = new google.maps.Geocoder();
             return geocoder.geocode({
-                address: Utils.queryString ("address")
+                address: Url.queryString ("address")
             }, function(results, status) {
                 var loc = results[0].geometry.location;
                 if (!loc) { return console.error ("No location found"); }
@@ -238,10 +239,10 @@ module.exports = function(config) {
     ) {
 
         // get the map id
-        var mapId = Utils.queryString ("mapId")
-          , lat = Utils.queryString ("options.center.lat")
-          , lng = Utils.queryString ("options.center.lng")
-          , address = Utils.queryString ("address")
+        var mapId = Url.queryString ("mapId")
+          , lat = Url.queryString ("options.center.lat")
+          , lng = Url.queryString ("options.center.lng")
+          , address = Url.queryString ("address")
           ;
 
         // map id was provided
@@ -317,3 +318,5 @@ module.exports = function(config) {
         self._$.error.text("Please provide a map id or use the query string API.");
     }
 };
+
+return module; });
