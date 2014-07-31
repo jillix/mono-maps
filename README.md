@@ -69,6 +69,9 @@ Not yet implemented
 
 ## `dev`
 
+## `v0.2.0`
+ - Updated deps
+
 ## `v0.1.0`
  - Initial release
 
