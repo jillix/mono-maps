@@ -1,9 +1,7 @@
-M.wrap('github/jillix/mono-maps/v0.2.0/client/main.js', function (require, module, exports) {
-// dependencies
-var Bind = require("github/jillix/bind")
-  , Events = require("github/jillix/events")
-  , Utils = require("github/jillix/utils")
-  ;
+// Dependencies
+var Bind = require("github/jillix/bind");
+var Events = require("github/jillix/events");
+var Utils = require("github/jillix/utils");
 
 /**
  *  Mono module for jxMaps application
@@ -18,8 +16,8 @@ module.exports = function(config) {
 
     // binds
     config.binds = config.binds || [];
-    config.options = Object (config.options);
-    config.options.ui = Object (config.options.ui);
+    config.options = Object(config.options);
+    config.options.ui = Object(config.options.ui);
 
     // run the binds
     for (var i = 0; i < config.binds.length; ++i) {
@@ -32,19 +30,21 @@ module.exports = function(config) {
 
     // ui
     self._$ = {
-        map: $(self.config.options.ui.map)
-      , waiter: $(self.config.options.ui.waiter)
-      , error: $(self.config.options.ui.error)
-    }
+        map: $(self.config.options.ui.map),
+        waiter: $(self.config.options.ui.waiter),
+        error: $(self.config.options.ui.error)
+    };
 
     // crud operations
     var operations = ["create", "read", "update", "delete"];
 
     // generate client methods
     for (var i = 0; i < operations.length; ++i) {
-        (function (op) {
-            self[op] = function (options, callback) {
-                self.link (op, { data: options }, callback);
+        (function(op) {
+            self[op] = function(options, callback) {
+                self.link(op, {
+                    data: options
+                }, callback);
             };
         })(operations[i]);
     }
@@ -58,17 +58,19 @@ module.exports = function(config) {
      * @param callback
      * @return
      */
-    self.embed = function (options, callback) {
+    self.embed = function(options, callback) {
 
         // update ui
         self._$.map.hide();
         self._$.waiter.show();
 
         // default value for callback
-        callback = callback || function () {};
+        callback = callback || function() {};
 
         // call server operation
-        self.link ("embed", { data: options}, function (err, mapData) {
+        self.link("embed", {
+            data: options
+        }, function(err, mapData) {
 
             // handle error
             if (err) {
@@ -77,12 +79,12 @@ module.exports = function(config) {
                 self._$.waiter.fadeOut();
                 self._$.error.fadeIn().text(err);
 
-                return callback (err);
+                return callback(err);
             }
 
-            handleMapData (mapData);
+            handleMapData(mapData);
         });
-    }
+    };
 
     /**
      * handleMapData
@@ -91,7 +93,7 @@ module.exports = function(config) {
      * @param mapData
      * @return
      */
-    function handleMapData (mapData) {
+    function handleMapData(mapData) {
 
         // cache map data
         self._maps[mapData._id] = mapData;
@@ -108,16 +110,18 @@ module.exports = function(config) {
      * @param mapData
      * @return
      */
-    window.__initializeMap = function (mapData) {
+    window.__initializeMap = function(mapData) {
 
         // handle ?address parameter
         if (self._maps._addressMap) {
             geocoder = new google.maps.Geocoder();
             return geocoder.geocode({
-                address: Url.queryString ("address")
+                address: Url.queryString("address")
             }, function(results, status) {
                 var loc = results[0].geometry.location;
-                if (!loc) { return console.error ("No location found"); }
+                if (!loc) {
+                    return console.error("No location found");
+                }
                 var strLoc = loc.toString().replace(/\(|\)/g, "").split(", ");
                 var lat = strLoc[0];
                 var lng = strLoc[1];
@@ -137,7 +141,7 @@ module.exports = function(config) {
         // no map data
         if (!mapData) {
             for (var mapId in self._maps) {
-                __initializeMap (self._maps[mapId]);
+                __initializeMap(self._maps[mapId]);
             }
             return;
         }
@@ -145,31 +149,29 @@ module.exports = function(config) {
         // get map element
         var mapEl = self._$.map[0];
         if (!mapEl) {
-            return console.error ("No map element found.");
+            return console.error("No map element found.");
         }
 
         // map options
         var mapOptions = {
-            center: new google.maps.LatLng (
-                mapData.options.center.lat
-              , mapData.options.center.lng
-            )
-          , zoom: mapData.options.zoom
-          , mapTypeId: google.maps.MapTypeId[mapData.options.type]
+            center: new google.maps.LatLng(
+                mapData.options.center.lat, mapData.options.center.lng
+            ),
+            zoom: mapData.options.zoom,
+            mapTypeId: google.maps.MapTypeId[mapData.options.type]
         };
 
         // save google maps instance in _gmap
-        self._gmap = new google.maps.Map(mapEl, mapOptions)
+        self._gmap = new google.maps.Map(mapEl, mapOptions);
 
         // default value for markers
-        var markers = mapData.markers = mapData.markers || []
-          , allMarkers = []
-          ;
+        var markers = mapData.markers = mapData.markers || [],
+            allMarkers = [];
 
         // each marker
         for (var i = 0; i < markers.length; ++i) {
 
-            (function (cMarker) {
+            (function(cMarker) {
 
                 if (!cMarker.position) {
                     return;
@@ -179,29 +181,23 @@ module.exports = function(config) {
                 if (cMarker.icon) {
 
                     cMarker.icon = new google.maps.MarkerImage(
-                        cMarker.icon.path
-                      , new google.maps.Size (
-                            cMarker.icon.size.w
-                          , cMarker.icon.size.h
-                        )
-                      , new google.maps.Point (
-                            cMarker.icon.origin.x
-                          , cMarker.icon.origin.y
-                        )
-                      , new google.maps.Point (
-                            cMarker.icon.anchor.x
-                          , cMarker.icon.anchor.y
+                        cMarker.icon.path, new google.maps.Size(
+                            cMarker.icon.size.w, cMarker.icon.size.h
+                        ), new google.maps.Point(
+                            cMarker.icon.origin.x, cMarker.icon.origin.y
+                        ), new google.maps.Point(
+                            cMarker.icon.anchor.x, cMarker.icon.anchor.y
                         )
                     );
                 }
 
                 // create google marker
                 var marker = new google.maps.Marker({
-                    position: new google.maps.LatLng(cMarker.position.lat, cMarker.position.lng)
-                  , map: self._gmap
-                  , title: cMarker.title || ""
-                  , icon: cMarker.icon || undefined
-                  , visible: cMarker.visible
+                    position: new google.maps.LatLng(cMarker.position.lat, cMarker.position.lng),
+                    map: self._gmap,
+                    title: cMarker.title || "",
+                    icon: cMarker.icon || undefined,
+                    visible: cMarker.visible
                 });
 
                 // infowin exists
@@ -212,7 +208,7 @@ module.exports = function(config) {
                 }
 
                 // push the new marker
-                allMarkers.push (marker);
+                allMarkers.push(marker);
 
                 // add click event for info window
                 google.maps.event.addListener(marker, "click", function() {
@@ -235,31 +231,34 @@ module.exports = function(config) {
 
     // we are on the embed page
     if (
-        location.pathname + location.hash === self.config.options.embedPage
-        && self.config.options.automaticallyEmbed !== false
+        location.pathname + location.hash === self.config.options.embedPage && self.config.options.automaticallyEmbed !== false
     ) {
 
         // get the map id
-        var mapId = Url.queryString ("mapId")
-          , lat = Url.queryString ("options.center.lat")
-          , lng = Url.queryString ("options.center.lng")
-          , address = Url.queryString ("address")
-          ;
+        var mapId = Url.queryString("mapId"),
+            lat = Url.queryString("options.center.lat"),
+            lng = Url.queryString("options.center.lng"),
+            address = Url.queryString("address");
 
         // map id was provided
         if (mapId) {
-            return self.embed ({mapId: mapId});
+            return self.embed({
+                mapId: mapId
+            });
         }
 
         if (address) {
-            return handleMapData ({address: address, _id: "_addressMap" });
+            return handleMapData({
+                address: address,
+                _id: "_addressMap"
+            });
         }
 
         // querystring api
         if (lat && lng) {
 
             var validators = {
-                number: function (val) {
+                number: function(val) {
                     return isNaN(val) ? undefined : Number(val);
                 }
             };
@@ -268,8 +267,12 @@ module.exports = function(config) {
                 "name": {
                     default: "No name"
                 },
-                "options.center.lat": { validator: validators.number },
-                "options.center.lng": { validator: validators.number },
+                "options.center.lat": {
+                    validator: validators.number
+                },
+                "options.center.lng": {
+                    validator: validators.number
+                },
                 "options.zoom": {
                     validator: validators.number,
                     default: 15
@@ -279,18 +282,42 @@ module.exports = function(config) {
                 },
                 "markers.0.label": {},
                 "markers.0.title": {},
-                "markers.0.position.lat": { validator: validators.number },
-                "markers.0.position.lng": { validator: validators.number },
+                "markers.0.position.lat": {
+                    validator: validators.number
+                },
+                "markers.0.position.lng": {
+                    validator: validators.number
+                },
                 "markers.0.icon.path": {},
                 "markers.0.icon.label": {},
-                "markers.0.icon.size.w": { default: 100, validator: validators.number },
-                "markers.0.icon.size.h": { default: 100, validator: validators.number },
-                "markers.0.icon.origin.x": { default: 0, validator: validators.number },
-                "markers.0.icon.origin.y": { default: 0, validator: validators.number },
-                "markers.0.icon.anchor.x": { default: 0, validator: validators.number },
-                "markers.0.icon.anchor.y": { default: 0, validator: validators.number },
+                "markers.0.icon.size.w": {
+                    default: 100,
+                    validator: validators.number
+                },
+                "markers.0.icon.size.h": {
+                    default: 100,
+                    validator: validators.number
+                },
+                "markers.0.icon.origin.x": {
+                    default: 0,
+                    validator: validators.number
+                },
+                "markers.0.icon.origin.y": {
+                    default: 0,
+                    validator: validators.number
+                },
+                "markers.0.icon.anchor.x": {
+                    default: 0,
+                    validator: validators.number
+                },
+                "markers.0.icon.anchor.y": {
+                    default: 0,
+                    validator: validators.number
+                },
                 "markers.0.infowin.content": {},
-                "markers.0.visible": { default: true }
+                "markers.0.visible": {
+                    default: true
+                }
             };
 
             function iconLoaded() {
@@ -313,7 +340,9 @@ module.exports = function(config) {
 
                 if (!mapData["markers.0.icon.path"]) {
                     for (var m in mapData) {
-                        if (!/^markers\./.test(m)) { continue; }
+                        if (!/^markers\./.test(m)) {
+                            continue;
+                        }
                         console.log("deleting " + m);
                         delete mapData[m];
                     }
@@ -324,14 +353,14 @@ module.exports = function(config) {
                     mapData.markers.length = 1;
                 }
 
-                handleMapData (mapData);
+                handleMapData(mapData);
             }
 
             var iconImgSrc = Url.queryString("markers.0.icon.path");
             if (iconImgSrc) {
                 var iconImg = new Image();
                 iconImg.src = iconImgSrc;
-                return $(iconImg).load(function () {
+                return $(iconImg).load(function() {
                     fields["markers.0.icon.anchor.x"]["default"] = iconImg.width / 2;
                     fields["markers.0.icon.anchor.y"]["default"] = iconImg.height / 2 + iconImg.height / 3;
                     iconLoaded();
@@ -347,5 +376,3 @@ module.exports = function(config) {
         self._$.error.text("Please provide a map id or use the query string API.");
     }
 };
-
-return module; });

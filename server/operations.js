@@ -1,121 +1,107 @@
 // dependencies
-var Api = require ("../apis/api")
-  , ObjectId = require ("mongodb").ObjectID
-  ;
+var Api = require("../apis/api");
+var ObjectId = require("mongodb").ObjectID;
 
 // constants
-const DUMMY_OBJECT_ID = ObjectId ("000000000000000000000000");
+const DUMMY_OBJECT_ID = ObjectId("000000000000000000000000");
 
 /**
  *  This function validates the post data and
  *  returns true if data is valid
  *
  */
-function validateFormData (operation, data, link) {
+function validateFormData(operation, data, link) {
 
     // operation validators
     var validators = {
-
-        // template names
-        _validTypes: ["map", "marker", "infowin", "icon"]
-      , _validateObject: function (obj, name) {
+        _validTypes: ["map", "marker", "infowin", "icon"],
+        _validateObject: function(obj, name) {
 
             // validate data
             if (!obj || obj.constructor !== Object) {
-                return link.send (400, name + " must be an object.");
+                return link.send(400, name + " must be an object.");
             }
 
             return true;
-        }
+        },
 
         /*
          *  Create operation validator
          * */
-      , create: function () {
+        create: function() {
 
-            // type
             if (!data.type || data.type.constructor !== String) {
-                return link.send (400, "type field must be a non empty string.");
+                return link.send(400, "type field must be a non empty string.");
             }
 
-            // validate type
             if (validators._validTypes.indexOf(data.type) === -1) {
-                return link.send (400, "Invalid type.");
+                return link.send(400, "Invalid type.");
             }
 
-            // validate data
-            return validators._validateObject (data.data, "Data");
-        }
+            return validators._validateObject(data.data, "Data");
+        },
 
         /*
          *  Read operation validator
          * */
-      , read: function () {
-
-            // validate query
-            return validators._validateObject (data.query, "Query");
-        }
+        read: function() {
+            return validators._validateObject(data.query, "Query");
+        },
 
         /*
          *  Update operation validator
          * */
-      , update: function () {
+        update: function() {
 
-            // type
             if (!data.type || data.type.constructor !== String) {
-                return link.send (400, "type field must be a non empty string.");
+                return link.send(400, "type field must be a non empty string.");
             }
 
-            // validate type
             if (validators._validTypes.indexOf(data.type) === -1) {
-                return link.send (400, "Invalid type.");
+                return link.send(400, "Invalid type.");
             }
 
-            // validate query and data
-            if (validators._validateObject (data.query, "Query") === true) {
-                return validators._validateObject (data.data, "Data");
+            if (validators._validateObject(data.query, "Query") === true) {
+                return validators._validateObject(data.data, "Data");
             }
 
             return true;
-        }
+        },
 
         /*
          *  Delete operation validator
          * */
-      , delete: function () {
+        delete: function() {
 
-            // type
             if (!data.type || data.type.constructor !== String) {
-                return link.send (400, "type field must be a non empty string.");
+                return link.send(400, "type field must be a non empty string.");
             }
 
-            // validate type
             if (validators._validTypes.indexOf(data.type) === -1) {
-                return link.send (400, "Invalid type.");
+                return link.send(400, "Invalid type.");
             }
 
-            // validate query
             if (!data.query || data.query.constructor !== Object) {
-                return link.send (400, "Query must be an object.");
+                return link.send(400, "Query must be an object.");
             }
 
             return true;
-        }
-      , embed: function () {
+        },
+        embed: function() {
 
             // validate map id
             if (!data.mapId || data.mapId.constructor !== String) {
-                return link.send (400, "Missing or invalid map id.");
+                return link.send(400, "Missing or invalid map id.");
             }
 
             return true;
         }
-    }
+    };
 
     // is the user logged in?
     if (operation !== "embed") {
         if (!link.session || !link.session.userId || !link.session.userId.toString()) {
-            return link.session (403, "You are not logged in.");
+            return link.session(403, "You are not logged in.");
         }
     }
 
@@ -130,7 +116,7 @@ function validateFormData (operation, data, link) {
                 switch (data.type) {
                     case "marker":
                         data.data.infowin = data.data.infowin || DUMMY_OBJECT_ID;
-                        data.data.icon    = data.data.icon    || DUMMY_OBJECT_ID;
+                        data.data.icon = data.data.icon || DUMMY_OBJECT_ID;
                         break;
                 }
                 return true;
@@ -146,14 +132,14 @@ function validateFormData (operation, data, link) {
 
                 // _id provided, but is a string
                 if (data.query._id && data.query._id.constructor === String) {
-                    data.query._id = ObjectId (data.query._id);
+                    data.query._id = ObjectId(data.query._id);
                 }
 
                 // set default object id values
                 switch (data.type) {
                     case "marker":
                         data.data.$set.infowin = data.data.$set.infowin || DUMMY_OBJECT_ID;
-                        data.data.$set.icon    = data.data.$set.icon    || DUMMY_OBJECT_ID;
+                        data.data.$set.icon = data.data.$set.icon || DUMMY_OBJECT_ID;
                         break;
                 }
 
@@ -165,7 +151,7 @@ function validateFormData (operation, data, link) {
             case "embed":
                 return true;
             default:
-                link.send (200, "Invalid operation");
+                link.send(200, "Invalid operation");
                 return false;
         }
     }
@@ -176,15 +162,13 @@ function validateFormData (operation, data, link) {
  *  from CRUD comes
  *
  * */
-function handleResponse (link, err, data) {
+function handleResponse(link, err, data) {
 
-    // handle error
     if (err) {
-        return link.send (400, err);
+        return link.send(400, err);
     }
 
-    // send success
-    link.send (200, data);
+    link.send(200, data);
 }
 
 /**
@@ -192,21 +176,21 @@ function handleResponse (link, err, data) {
  *  Create a new map/marker/infowin/icon
  *
  */
-exports.create = function (link) {
+exports.create = function(link) {
 
     // get data, params
     var data = Object(link.data);
 
     // validate data
-    if (validateFormData ("create", data, link) !== true) {
+    if (validateFormData("create", data, link) !== true) {
         return;
     }
 
     // create map, marker, infowindow or icon
-    Api[data.type].create ({
+    Api[data.type].create({
         data: data.data
-    }, function (err, data) {
-        handleResponse (link, err, data);
+    }, function(err, data) {
+        handleResponse(link, err, data);
     });
 };
 
@@ -215,22 +199,22 @@ exports.create = function (link) {
  *  Read maps/markers/infowins/icons
  *
  */
-exports.read = function (link) {
+exports.read = function(link) {
 
     // get data
     var data = Object(link.data);
 
     // validate data
-    if (validateFormData ("read", data, link) !== true) {
+    if (validateFormData("read", data, link) !== true) {
         return;
     }
 
     // read map
-    Api[data.type].read ({
-        query: data.query
-      , noJoins: true
-    }, function (err, data) {
-        handleResponse (link, err, data);
+    Api[data.type].read({
+        query: data.query,
+        noJoins: true
+    }, function(err, data) {
+        handleResponse(link, err, data);
     });
 };
 
@@ -239,22 +223,22 @@ exports.read = function (link) {
  *  Update a map/marker/infowin/icon
  *
  */
-exports.update = function (link) {
+exports.update = function(link) {
 
     // get data
-    var data = Object (link.data);
+    var data = Object(link.data);
 
     // validate data
-    if (validateFormData ("update", data, link) !== true) {
+    if (validateFormData("update", data, link) !== true) {
         return;
     }
 
     // create map, marker, infowindow or icon
-    Api[data.type].update ({
-        query: data.query
-      , data: data.data
-    }, function (err, data) {
-        handleResponse (link, err, data);
+    Api[data.type].update({
+        query: data.query,
+        data: data.data
+    }, function(err, data) {
+        handleResponse(link, err, data);
     });
 };
 
@@ -263,21 +247,21 @@ exports.update = function (link) {
  *  Delete a map
  *
  */
-exports.delete = function (link) {
+exports.delete = function(link) {
 
     // get data
-    var data = Object (link.data);
+    var data = Object(link.data);
 
     // validate data
-    if (validateFormData ("delete", data, link) !== true) {
+    if (validateFormData("delete", data, link) !== true) {
         return;
     }
 
     // create map, marker, infowindow or icon
-    Api[data.type].delete ({
+    Api[data.type].delete({
         query: data.query
-    }, function (err, data) {
-        handleResponse (link, err, data);
+    }, function(err, data) {
+        handleResponse(link, err, data);
     });
 };
 
@@ -286,63 +270,68 @@ exports.delete = function (link) {
  *  Embeds a map
  *
  */
-exports.embed = function (link) {
+exports.embed = function(link) {
 
     // get data, params
-    var data = Object (link.data);
+    var data = Object(link.data);
 
     // validate data
-    if (validateFormData ("embed", data, link) !== true) {
+    if (validateFormData("embed", data, link) !== true) {
         return;
     }
 
     try {
-        data.mapId = ObjectId (data.mapId)
+        data.mapId = ObjectId(data.mapId);
     } catch (e) {
-        return handleResponse (link, "Invalid map id.");
+        return handleResponse(link, "Invalid map id.");
     }
 
     // read map
-    Api.map.read ({
+    Api.map.read({
         query: {
             _id: data.mapId
         }
-    }, function (err, data) {
+    }, function(err, data) {
 
         // handle crud errors
         if (err) {
-            console.error (err);
+            console.error(err);
             err = "Internal server error.";
-        // no maps
+            // no maps
         } else if (!data || !data.length) {
             err = "No map found with this id.";
         }
 
         // handle error
-        if (err) { return handleResponse (link, err, map); }
+        if (err) {
+            return handleResponse(link, err, map);
+        }
 
         // get map
-        var map = data[0]
-          , markers = map.markers || []
-          , howManyRequests = 0
-          , complete = 0
-          ;
+        var map = data[0],
+            markers = map.markers || [],
+            howManyRequests = 0,
+            complete = 0;
 
         // convert string to object ids
         for (var i = 0; i < markers.length; ++i) {
-            markers[i] = ObjectId (markers[i]);
+            markers[i] = ObjectId(markers[i]);
         }
 
 
         // read markers
-        Api.marker.read ({
+        Api.marker.read({
             query: {
-                _id: { $in: markers }
+                _id: {
+                    $in: markers
+                }
             }
-        }, function (err, markers) {
+        }, function(err, markers) {
 
             // handle error
-            if (err) { return handleResponse (link, err, map); }
+            if (err) {
+                return handleResponse(link, err, map);
+            }
 
             // attach markers
             map.markers = markers;
@@ -365,7 +354,7 @@ exports.embed = function (link) {
             }
 
             // send success response
-            handleResponse (link, null, map);
+            handleResponse(link, null, map);
         });
     });
 };
