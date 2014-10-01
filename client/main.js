@@ -168,6 +168,7 @@ module.exports = function(config) {
         // default value for markers
         var markers = mapData.markers = mapData.markers || [];
         var allMarkers = [];
+        var lastInfoWindow = null;
 
         // each marker
         for (var i = 0; i < markers.length; ++i) {
@@ -214,7 +215,11 @@ module.exports = function(config) {
                 // add click event for info window
                 google.maps.event.addListener(marker, "click", function() {
                     if (!cMarker.infowin) return;
-                    cMarker.infowin.open(self._gmap, marker);
+                    if (lastInfoWindow) {
+                        lastInfoWindow.close();
+                    }
+
+                    (lastInfoWindow = cMarker.infowin).open(self._gmap, marker);
                 });
             })(markers[i]);
         }
