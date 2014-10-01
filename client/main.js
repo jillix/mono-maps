@@ -166,8 +166,8 @@ module.exports = function(config) {
         self._gmap = new google.maps.Map(mapEl, mapOptions);
 
         // default value for markers
-        var markers = mapData.markers = mapData.markers || [],
-            allMarkers = [];
+        var markers = mapData.markers = mapData.markers || [];
+        var allMarkers = [];
 
         // each marker
         for (var i = 0; i < markers.length; ++i) {
@@ -236,10 +236,10 @@ module.exports = function(config) {
     ) {
 
         // get the map id
-        var mapId = Url.queryString("mapId"),
-            lat = Url.queryString("options.center.lat"),
-            lng = Url.queryString("options.center.lng"),
-            address = Url.queryString("address");
+        var mapId = Url.queryString("mapId");
+        var lat = Url.queryString("options.center.lat");
+        var lng = Url.queryString("options.center.lng");
+        var address = Url.queryString("address");
 
         // map id was provided
         if (mapId) {
