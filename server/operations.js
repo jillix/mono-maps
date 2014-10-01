@@ -370,7 +370,7 @@ exports.embed = function(link) {
         }, function (err, res, map) {
             if (err) { return handleResponse(link, err); }
             if (res.statusCode !== 200) { return handleResponse(link, "Bad request"); }
-            handleResponse(link, null, body);
+            handleResponse(link, null, map);
         });
     }
 };
