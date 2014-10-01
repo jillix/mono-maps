@@ -293,13 +293,7 @@ module.exports = function(config) {
                 "markers.0.visible": { default: true }
             };
 
-
-            var iconImg = new Image();
-            iconImg.src = Url.queryString("markers.0.icon.path");
-            return $(iconImg).load(function () {
-                fields["markers.0.icon.anchor.x"]["default"] = iconImg.width / 2;
-                fields["markers.0.icon.anchor.y"]["default"] = iconImg.height / 2 + iconImg.height / 3;
-
+            function iconLoaded() {
                 // set map data
                 var mapData = {};
                 var searchQueryObj = Url.parseSearchQuery();
@@ -317,11 +311,34 @@ module.exports = function(config) {
                     }
                 }
 
+                if (!mapData["markers.0.icon.path"]) {
+                    for (var m in mapData) {
+                        if (!/^markers\./.test(m)) { continue; }
+                        console.log("deleting " + m);
+                        delete mapData[m];
+                    }
+                }
+
                 mapData = Utils.unflattenObject(mapData);
-                mapData.markers.length = 1;
+                if (mapData.markers) {
+                    mapData.markers.length = 1;
+                }
 
                 handleMapData (mapData);
-            });
+            }
+
+            var iconImgSrc = Url.queryString("markers.0.icon.path");
+            if (iconImgSrc) {
+                var iconImg = new Image();
+                iconImg.src = iconImgSrc;
+                return $(iconImg).load(function () {
+                    fields["markers.0.icon.anchor.x"]["default"] = iconImg.width / 2;
+                    fields["markers.0.icon.anchor.y"]["default"] = iconImg.height / 2 + iconImg.height / 3;
+                    iconLoaded();
+                });
+            } else {
+                return iconLoaded();
+            }
         }
 
         // invalid request
