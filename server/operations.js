@@ -89,12 +89,15 @@ function validateFormData(operation, data, link) {
         },
         embed: function() {
 
-            // validate map id
-            if (!data.mapId || data.mapId.constructor !== String) {
-                return link.send(400, "Missing or invalid map id.");
+            if (typeof data.mapId === "string") {
+                return true;
             }
 
-            return true;
+            if (typeof data.data === "string") {
+                return true;
+            }
+
+            link.send(400, "Missing or invalid data.");
         }
     };
 
@@ -308,10 +311,10 @@ exports.embed = function(link) {
         }
 
         // get map
-        var map = data[0],
-            markers = map.markers || [],
-            howManyRequests = 0,
-            complete = 0;
+        var map = data[0];
+        var markers = map.markers || [];
+        var howManyRequests = 0;
+        var complete = 0;
 
         // convert string to object ids
         for (var i = 0; i < markers.length; ++i) {
