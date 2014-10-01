@@ -237,6 +237,7 @@ module.exports = function(config) {
 
         // get the map id
         var mapId = Url.queryString("mapId");
+        var dataUrl = Url.queryString("data");
         var lat = Url.queryString("options.center.lat");
         var lng = Url.queryString("options.center.lng");
         var address = Url.queryString("address");
@@ -245,6 +246,12 @@ module.exports = function(config) {
         if (mapId) {
             return self.embed({
                 mapId: mapId
+            });
+        }
+
+        if (dataUrl) {
+            return self.embed({
+                data: dataUrl
             });
         }
 
