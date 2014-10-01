@@ -1,3 +1,4 @@
+M.wrap('github/jillix/mono-maps/v0.2.0/client/main.js', function (require, module, exports) {
 // dependencies
 var Bind = require("github/jillix/bind")
   , Events = require("github/jillix/events")
@@ -292,27 +293,35 @@ module.exports = function(config) {
                 "markers.0.visible": { default: true }
             };
 
-            // set map data
-            var mapData = {};
-            var searchQueryObj = Url.parseSearchQuery();
-            for (var field in fields) {
-                if (!fields.hasOwnProperty(field)) continue;
-                var cFieldVal = fields[field];
-                var paramValue = searchQueryObj[field];
-                var valueToSet = paramValue || cFieldVal.default;
-                if (cFieldVal.validator) {
-                    valueToSet = cFieldVal.validator(valueToSet);
-                }
-                mapData[field] = valueToSet;
-                if (mapData[field] === undefined) {
-                    delete mapData[field];
-                }
-            }
 
-            mapData = Utils.unflattenObject(mapData);
-            mapData.markers.length = 1;
+            var iconImg = new Image();
+            iconImg.src = Url.queryString("markers.0.icon.path");
+            return $(iconImg).load(function () {
+                fields["markers.0.icon.anchor.x"]["default"] = iconImg.width / 2;
+                fields["markers.0.icon.anchor.y"]["default"] = iconImg.height / 2 + iconImg.height / 3;
 
-            return handleMapData (mapData);
+                // set map data
+                var mapData = {};
+                var searchQueryObj = Url.parseSearchQuery();
+                for (var field in fields) {
+                    if (!fields.hasOwnProperty(field)) continue;
+                    var cFieldVal = fields[field];
+                    var paramValue = searchQueryObj[field];
+                    var valueToSet = paramValue || cFieldVal.default;
+                    if (cFieldVal.validator) {
+                        valueToSet = cFieldVal.validator(valueToSet);
+                    }
+                    mapData[field] = valueToSet;
+                    if (mapData[field] === undefined) {
+                        delete mapData[field];
+                    }
+                }
+
+                mapData = Utils.unflattenObject(mapData);
+                mapData.markers.length = 1;
+
+                handleMapData (mapData);
+            });
         }
 
         // invalid request
@@ -321,3 +330,5 @@ module.exports = function(config) {
         self._$.error.text("Please provide a map id or use the query string API.");
     }
 };
+
+return module; });
