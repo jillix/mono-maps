@@ -1,3 +1,4 @@
+M.wrap('github/jillix/mono-maps/dev/client/main.js', function (require, module, exports) {
 // Dependencies
 var Bind = require("github/jillix/bind");
 var Events = require("github/jillix/events");
@@ -376,3 +377,5 @@ module.exports = function(config) {
         self._$.error.text("Please provide a map id or use the query string API.");
     }
 };
+
+return module; });
