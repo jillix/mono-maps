@@ -366,7 +366,8 @@ exports.embed = function(link) {
     } else if (data.data) {
         Request({
             url: data.data,
-            json: true
+            json: true,
+            gzip : true
         }, function (err, res, map) {
             if (err) { return handleResponse(link, err); }
             if (res.statusCode !== 200) { return handleResponse(link, "Bad request"); }
