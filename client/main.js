@@ -1,4 +1,3 @@
-M.wrap('github/jillix/mono-maps/dev/client/main.js', function (require, module, exports) {
 // Dependencies
 var Bind = require("github/jillix/bind");
 var Events = require("github/jillix/events");
@@ -115,7 +114,7 @@ module.exports = function(config) {
 
         // handle ?address parameter
         if (self._maps._addressMap) {
-            geocoder = new google.maps.Geocoder();
+            var geocoder = self._geocoder = new google.maps.Geocoder();
             return geocoder.geocode({
                 address: Url.queryString("address")
             }, function(results, status) {
@@ -388,6 +387,48 @@ module.exports = function(config) {
         self._$.waiter.hide();
         self._$.error.text("Please provide a map id or use the query string API.");
     }
-};
 
-return module; });
+    addEventListener("message", function (e) {
+        console.log(e.data);
+    }, false);
+
+    // PostMesage API
+    $(window).on("message", function(event) {
+        if (!event.data || !event.data.method) {
+            throw new Error("No method defined.");
+        }
+
+        var methods = {
+            search: function(d) {
+                d = Object(d);
+                gc.geocode(d.geocode, function(res) {
+
+                    if (!res || !res[0]) {
+                        return;
+                    }
+
+                    var p = res[0].geometry.location;
+
+                    //setTimeout( function(){
+
+                    google.maps.event.trigger(self._gmap, "resize");
+                    self._gmap.setCenter(p || self.center);
+
+                    if (p) {
+                        self._gmap.setZoom(11);
+                    } else {
+                        self._gmap.setZoom(8);
+                    }
+
+                    //}, 20 );
+                });
+            }
+        };
+
+        if (typeof methods[event.data.method] !== "function") {
+            throw new Error("Provided method is not a function.");
+        }
+
+        methods[event.data.method](event.data.data);
+    });
+};
