@@ -249,8 +249,6 @@ module.exports = function(config) {
 
                     var p = res[0].geometry.location;
 
-                    //setTimeout( function(){
-
                     google.maps.event.trigger(self._gmap, "resize");
                     self._gmap.setCenter(p || self.center);
 
@@ -259,8 +257,6 @@ module.exports = function(config) {
                     } else {
                         self._gmap.setZoom(8);
                     }
-
-                    //}, 20 );
                 });
             }
         };
