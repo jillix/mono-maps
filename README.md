@@ -25,7 +25,7 @@ Mono module for [jxMaps application](https://github.com/jillix/Maps).
 
 # Client side
 
-## `self.create (options, callback)`
+## `self.create(options, callback)`
 Creates a new map, marker, infowindow or icon
 
 Arguments
@@ -34,7 +34,7 @@ Arguments
    - `data`: object that contains the data the must be inserted via crud api
  - `callback`: the callback function
 
-## `self.read (data, callback)`
+## `self.read(options, callback)`
 Reads all maps for the authenticated user.
 
 Arguments
@@ -42,7 +42,7 @@ Arguments
    - `query`: the query that will be passed to crud api
  - `callback`: the callback function
 
-## `self.update (data, callback)`
+## `self.update(options, callback)`
 Updates a map, marker, infowindow or icon
 
 Arguments
@@ -52,7 +52,7 @@ Arguments
    - `query`: the query that will be passed to crud api
  - `callback`: the callback function
 
-## `self.delete (data, callback)`
+## `self.delete(options, callback)`
 Deletes a map, marker, infowindow or icon
 
 Arguments
@@ -61,9 +61,13 @@ Arguments
    - `query`: the query that will be passed to crud api
  - `callback`: the callback function
 
-## `self.embed (data, callback)`
+## `self.embed(options, callback)`
 Gets the needed map information for embed
-Not yet implemented
+
+ - `options` is an object containing **one** of the following fields
+   - `mapId`: the map id that should be loaded
+   - `data`: an external URL that sends JSON data in `Map` resource type format.
+ - `callback`: the callback function
 
 # Changelog
 

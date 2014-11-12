@@ -1,6 +1,7 @@
 // dependencies
 var Api = require("../apis/api");
 var ObjectId = require("mongodb").ObjectID;
+var Request = require("request");
 
 // constants
 const DUMMY_OBJECT_ID = ObjectId("000000000000000000000000");
@@ -89,12 +90,15 @@ function validateFormData(operation, data, link) {
         },
         embed: function() {
 
-            // validate map id
-            if (!data.mapId || data.mapId.constructor !== String) {
-                return link.send(400, "Missing or invalid map id.");
+            if (data.mapId && typeof data.mapId === "string") {
+                return true;
             }
 
-            return true;
+            if (data.data && typeof data.data === "string") {
+                return true;
+            }
+
+            link.send(400, "Missing or invalid data.");
         }
     };
 
@@ -280,81 +284,94 @@ exports.embed = function(link) {
         return;
     }
 
-    try {
-        data.mapId = ObjectId(data.mapId);
-    } catch (e) {
-        return handleResponse(link, "Invalid map id.");
-    }
+    if (data.mapId) {
 
-    // read map
-    Api.map.read({
-        query: {
-            _id: data.mapId
-        }
-    }, function(err, data) {
-
-        // handle crud errors
-        if (err) {
-            console.error(err);
-            err = "Internal server error.";
-            // no maps
-        } else if (!data || !data.length) {
-            err = "No map found with this id.";
+        try {
+            data.mapId = ObjectId(data.mapId);
+        } catch (e) {
+            return handleResponse(link, "Invalid map id.");
         }
 
-        // handle error
-        if (err) {
-            return handleResponse(link, err, map);
-        }
-
-        // get map
-        var map = data[0],
-            markers = map.markers || [],
-            howManyRequests = 0,
-            complete = 0;
-
-        // convert string to object ids
-        for (var i = 0; i < markers.length; ++i) {
-            markers[i] = ObjectId(markers[i]);
-        }
-
-
-        // read markers
-        Api.marker.read({
+        // read map
+        Api.map.read({
             query: {
-                _id: {
-                    $in: markers
-                }
+                _id: data.mapId
             }
-        }, function(err, markers) {
+        }, function(err, data) {
+
+            // handle crud errors
+            if (err) {
+                console.error(err);
+                err = "Internal server error.";
+                // no maps
+            } else if (!data || !data.length) {
+                err = "No map found with this id.";
+            }
 
             // handle error
             if (err) {
                 return handleResponse(link, err, map);
             }
 
-            // attach markers
-            map.markers = markers;
+            // get map
+            var map = data[0];
+            var markers = map.markers || [];
+            var howManyRequests = 0;
+            var complete = 0;
 
-            // delete icons that have dummy ids
+            // convert string to object ids
             for (var i = 0; i < markers.length; ++i) {
-
-                // current marker
-                var cMarker = markers[i];
-
-                // verify if icon is dummy
-                if (cMarker.icon && cMarker.icon._id.toString() === DUMMY_OBJECT_ID.toString()) {
-                    delete cMarker.icon;
-                }
-
-                // verify if infowin is dummy
-                if (cMarker.infowin && cMarker.infowin._id.toString() === DUMMY_OBJECT_ID.toString()) {
-                    delete cMarker.infowin;
-                }
+                markers[i] = ObjectId(markers[i]);
             }
 
-            // send success response
+
+            // read markers
+            Api.marker.read({
+                query: {
+                    _id: {
+                        $in: markers
+                    }
+                }
+            }, function(err, markers) {
+
+                // handle error
+                if (err) {
+                    return handleResponse(link, err, map);
+                }
+
+                // attach markers
+                map.markers = markers;
+
+                // delete icons that have dummy ids
+                for (var i = 0; i < markers.length; ++i) {
+
+                    // current marker
+                    var cMarker = markers[i];
+
+                    // verify if icon is dummy
+                    if (cMarker.icon && cMarker.icon._id.toString() === DUMMY_OBJECT_ID.toString()) {
+                        delete cMarker.icon;
+                    }
+
+                    // verify if infowin is dummy
+                    if (cMarker.infowin && cMarker.infowin._id.toString() === DUMMY_OBJECT_ID.toString()) {
+                        delete cMarker.infowin;
+                    }
+                }
+
+                // send success response
+                handleResponse(link, null, map);
+            });
+        });
+    } else if (data.data) {
+        Request({
+            url: data.data,
+            json: true,
+            gzip: true
+        }, function (err, res, map) {
+            if (err) { return handleResponse(link, err); }
+            if (res.statusCode !== 200) { return handleResponse(link, "Bad request"); }
             handleResponse(link, null, map);
         });
-    });
+    }
 };
