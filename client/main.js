@@ -224,7 +224,9 @@ module.exports = function(config) {
         }
 
         // marker clusterer
-        self._gmarkerClusterer = new MarkerClusterer(self._gmap);
+        if (mapData.options.clustering) {
+            self._gmarkerClusterer = new MarkerClusterer(self._gmap, allMarkers, mapData.options.clustering.options);
+        }
 
         // update ui
         self._$.map.fadeIn();
@@ -425,3 +427,4 @@ module.exports = function(config) {
         self._$.error.text("Please provide a map id or use the query string API.");
     }
 };
+
