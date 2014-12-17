@@ -112,9 +112,9 @@ module.exports = function(config) {
      */
     window.__initializeMap = function(mapData) {
 
+        var geocoder = self._geocoder = new google.maps.Geocoder();
         // handle ?address parameter
         if (self._maps._addressMap) {
-            geocoder = new google.maps.Geocoder();
             return geocoder.geocode({
                 address: Url.queryString("address")
             }, function(results, status) {
@@ -165,8 +165,9 @@ module.exports = function(config) {
         self._gmap = new google.maps.Map(mapEl, mapOptions);
 
         // default value for markers
-        var markers = mapData.markers = mapData.markers || [],
-            allMarkers = [];
+        var markers = mapData.markers = mapData.markers || [];
+        var allMarkers = [];
+        var lastInfoWindow = null;
 
         // each marker
         for (var i = 0; i < markers.length; ++i) {
@@ -213,18 +214,61 @@ module.exports = function(config) {
                 // add click event for info window
                 google.maps.event.addListener(marker, "click", function() {
                     if (!cMarker.infowin) return;
-                    cMarker.infowin.open(self._gmap, marker);
+                    if (lastInfoWindow) {
+                        lastInfoWindow.close();
+                    }
+
+                    (lastInfoWindow = cMarker.infowin).open(self._gmap, marker);
                 });
             })(markers[i]);
         }
 
         // marker clusterer
-        self._gmarkerClusterer = new MarkerClusterer(self._gmap);
+        if (mapData.options.clustering) {
+            self._gmarkerClusterer = new MarkerClusterer(self._gmap, allMarkers, mapData.options.clustering.options);
+        }
 
         // update ui
         self._$.map.fadeIn();
         self._$.waiter.fadeOut();
     };
+
+    // PostMesage API
+    $(window).on("message", function(event) {
+        event.data = event.originalEvent.data;
+        if (!event.data || !event.data.method) {
+            throw new Error("No method defined.");
+        }
+
+        var methods = {
+            search: function(d) {
+                d = Object(d);
+                self._geocoder.geocode(d.geocode, function(res) {
+
+                    if (!res || !res[0]) {
+                        return;
+                    }
+
+                    var p = res[0].geometry.location;
+
+                    google.maps.event.trigger(self._gmap, "resize");
+                    self._gmap.setCenter(p || self.center);
+
+                    if (p) {
+                        self._gmap.setZoom(11);
+                    } else {
+                        self._gmap.setZoom(8);
+                    }
+                });
+            }
+        };
+
+        if (typeof methods[event.data.method] !== "function") {
+            throw new Error("Provided method is not a function.");
+        }
+
+        methods[event.data.method](event.data.data);
+    });
 
     // emit ready
     self.emit("ready", self);
@@ -235,15 +279,22 @@ module.exports = function(config) {
     ) {
 
         // get the map id
-        var mapId = Url.queryString("mapId"),
-            lat = Url.queryString("options.center.lat"),
-            lng = Url.queryString("options.center.lng"),
-            address = Url.queryString("address");
+        var mapId = Url.queryString("mapId");
+        var dataUrl = Url.queryString("data");
+        var lat = Url.queryString("options.center.lat");
+        var lng = Url.queryString("options.center.lng");
+        var address = Url.queryString("address");
 
         // map id was provided
         if (mapId) {
             return self.embed({
                 mapId: mapId
+            });
+        }
+
+        if (dataUrl) {
+            return self.embed({
+                data: dataUrl
             });
         }
 
@@ -376,3 +427,4 @@ module.exports = function(config) {
         self._$.error.text("Please provide a map id or use the query string API.");
     }
 };
+
