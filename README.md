@@ -72,6 +72,11 @@ Gets the needed map information for embed
 # Changelog
 
 ## `dev`
+ - add new features here
+
+## `v0.3.0`
+ - Added dynamic map functionality
+ - Map marker clustering fixes
 
 ## `v0.2.0`
  - Updated deps
