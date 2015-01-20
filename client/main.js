@@ -123,7 +123,6 @@ module.exports = function(config) {
             location.reload();
         }
 
-        var geocoder = self._geocoder = new google.maps.Geocoder();
         // handle ?address parameter
         if (self._maps._addressMap) {
             var address = Url.queryString("address");
@@ -140,6 +139,7 @@ module.exports = function(config) {
                 }
             }
 
+            var geocoder = self._geocoder = new google.maps.Geocoder();
             geocoder.geocode({
                 address: Url.queryString("address")
             }, function(results, status) {
@@ -194,8 +194,7 @@ module.exports = function(config) {
 
                 // icon exists
                 if (cMarker.icon) {
-
-                    cMarker.icon = new google.maps.MarkerImage(
+                    cMarker.icon = !cMarker.icon.path ? undefined : new google.maps.MarkerImage(
                         cMarker.icon.path, new google.maps.Size(
                             cMarker.icon.size.w, cMarker.icon.size.h
                         ), new google.maps.Point(
@@ -400,16 +399,6 @@ module.exports = function(config) {
                     mapData[field] = valueToSet;
                     if (mapData[field] === undefined) {
                         delete mapData[field];
-                    }
-                }
-
-                if (!mapData["markers.0.icon.path"]) {
-                    for (var m in mapData) {
-                        if (!/^markers\./.test(m)) {
-                            continue;
-                        }
-                        console.log("deleting " + m);
-                        delete mapData[m];
                     }
                 }
 
