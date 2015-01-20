@@ -72,6 +72,7 @@ Gets the needed map information for embed
 # Changelog
 
 ## `dev`
+ - not performing reverse geocoding for `latLng` address searches
  - add new features here
 
 ## `v0.3.0`

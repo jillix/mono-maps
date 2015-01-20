@@ -112,30 +112,44 @@ module.exports = function(config) {
      */
     window.__initializeMap = function(mapData) {
 
+        function updateAndReload(lat, lng) {
+            Url.updateSearchParam("options.center.lat", lat);
+            Url.updateSearchParam("options.center.lng", lng);
+            Url.updateSearchParam("address");
+            if (Url.queryString("displayMarker")) {
+                Url.updateSearchParam("markers.0.position.lat", lat);
+                Url.updateSearchParam("markers.0.position.lng", lng);
+            }
+            location.reload();
+        }
+
         var geocoder = self._geocoder = new google.maps.Geocoder();
         // handle ?address parameter
         if (self._maps._addressMap) {
-            return geocoder.geocode({
+            var address = Url.queryString("address");
+            var match = address.match(/^([-+]?\d{1,2}([.]\d+)?),\s*([-+]?\d{1,3}([.]\d+)?)$/);
+
+            // if we have a match
+            if (match) {
+                // both coordinates must be valid numbers
+                lat = Number(match[1]);
+                lng = Number(match[3]);
+
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    return updateAndReload(lat, lng);
+                }
+            }
+
+            geocoder.geocode({
                 address: Url.queryString("address")
             }, function(results, status) {
-                var loc = results[0].geometry.location;
-                if (!loc) {
+                if (!results[0] || !results[0].geometry.location) {
                     return console.error("No location found");
                 }
-                var strLoc = loc.toString().replace(/\(|\)/g, "").split(", ");
-                var lat = strLoc[0];
-                var lng = strLoc[1];
-
-                // set lng and lat values and delete address param
-                Url.updateSearchParam("options.center.lng", lng);
-                Url.updateSearchParam("options.center.lat", lat);
-                Url.updateSearchParam("address");
-                if (Url.queryString("displayMarker")) {
-                    Url.updateSearchParam("markers.0.position.lng", lng);
-                    Url.updateSearchParam("markers.0.position.lat", lat);
-                }
-                location.reload();
+                var strLoc = results[0].geometry.location.toString().replace(/\(|\)/g, "").split(", ");
+                updateAndReload(strLoc[0], strLoc[1]);
             });
+            return;
         }
 
         // no map data
