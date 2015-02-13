@@ -69,11 +69,17 @@ Gets the needed map information for embed
    - `data`: an external URL that sends JSON data in `Map` resource type format.
  - `callback`: the callback function
 
-# Changelog
+# Change log
 
 ## `dev`
- - not performing reverse geocoding for `latLng` address searches
  - add new features here
+
+## `v0.3.2`
+ - Not performing reverse geocoding for `latLng` address searches
+ - Always create the geocoder object
+
+## `v0.3.1`
+ - **NOTE** version skipped
 
 ## `v0.3.0`
  - Added dynamic map functionality
