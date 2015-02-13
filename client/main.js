@@ -123,6 +123,8 @@ module.exports = function(config) {
             location.reload();
         }
 
+        var geocoder = self._geocoder = new google.maps.Geocoder();
+
         // handle ?address parameter
         if (self._maps._addressMap) {
             var address = Url.queryString("address");
@@ -139,7 +141,6 @@ module.exports = function(config) {
                 }
             }
 
-            var geocoder = self._geocoder = new google.maps.Geocoder();
             geocoder.geocode({
                 address: Url.queryString("address")
             }, function(results, status) {
