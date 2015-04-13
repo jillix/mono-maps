@@ -257,21 +257,19 @@ module.exports = function(config) {
         var methods = {
             search: function(d) {
                 d = Object(d);
+                d.options = d.options || {};
+
                 self._geocoder.geocode(d.geocode, function(res) {
 
-                    if (!res || !res[0]) {
+                    if (!res || !res[0] || res[0].types.indexOf("country") !== -1) {
                         return;
                     }
 
                     var p = res[0].geometry.location;
-
-                    google.maps.event.trigger(self._gmap, "resize");
-                    self._gmap.setCenter(p || self.center);
-
                     if (p) {
-                        self._gmap.setZoom(11);
-                    } else {
-                        self._gmap.setZoom(8);
+                        google.maps.event.trigger(self._gmap, "resize");
+                        self._gmap.setCenter(p);
+                        self._gmap.setZoom(d.options.zoom || 13);
                     }
                 });
             }
@@ -431,4 +429,3 @@ module.exports = function(config) {
         self._$.error.text("Please provide a map id or use the query string API.");
     }
 };
-

@@ -71,8 +71,10 @@ Gets the needed map information for embed
 
 # Change log
 
-## `dev`
- - add new features here
+## `v0.3.3`
+ - The new default zoom level for dynamic map searched is 13
+ - The map will not pan/zoom if the top result is a type-`country` result
+ - The `search` method accepts now also `options.zoom` for better control when displaying the found result
 
 ## `v0.3.2`
  - Not performing reverse geocoding for `latLng` address searches
