@@ -1,10 +1,10 @@
 {
     "source": "github"
-  , "owner": "jillix"
+  , "owner": "jxmono"
   , "name": "mono-maps"
   , "dependencies": [
         "/client/main.js"
-      , "http://google-maps-utility-library-v3.googlecode.com/svn/trunk/markerclusterer/src/markerclusterer.js"
+      , "https://googlemaps.github.io/js-marker-clusterer/src/markerclusterer.js"
       , "github/jillix/utils/v0.1.5"
       , "github/jillix/bind/v0.3.1"
       , "github/jillix/events/v0.3.0"
