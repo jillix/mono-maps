@@ -71,6 +71,10 @@ Gets the needed map information for embed
 
 # Change log
 
+## `v0.4.0`
+ - Updated owner to jxmono
+ - Updated to the new Github repo URL for the markercluster.js dependency
+
 ## `v0.3.3`
  - The new default zoom level for dynamic map searched is 13
  - The map will not pan/zoom if the top result is a type-`country` result
